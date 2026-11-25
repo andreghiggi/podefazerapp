@@ -10,6 +10,7 @@ Site: [podefazer.com.br](https://podefazer.com.br)
 | --- | --- |
 | `index.html` | Página do site (podefazer.com.br). Um arquivo só, sem dependências além do Google Fonts. |
 | `app/` | Protótipo funcional do app, que roda no navegador do celular. Gera o PDF e manda no WhatsApp. É o que vai para o profissional piloto antes do app Android. |
+| `mobile/` | App de verdade (Expo / React Native), feito a partir do protótipo. Ver `mobile/README.md`. |
 | `marca/` | Logo, símbolo, ícone do app (512 × 512, para a Google Play), guia da marca e tokens de cor e tipografia. |
 | `docs/` | Estratégia: concorrência, nome, backlog, roadmap e próximos passos. |
 
@@ -36,4 +37,4 @@ Também funciona abrindo os arquivos direto no navegador ou em qualquer hospedag
 
 ## Próximo passo
 
-Desenvolver o app Android (Flutter ou React Native) a partir do protótipo em `app/` e publicar primeiro na Google Play. Ver `docs/estrategia.md`.
+Etapa 1 do app pronta em `mobile/` (React Native com Expo). Falta: teste no celular do profissional piloto, APK pelo EAS e as etapas P1 do backlog. Ver `docs/estrategia.md`.
