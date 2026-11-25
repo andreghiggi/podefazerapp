@@ -7,14 +7,32 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
     "scheme": "podefazer",
-    "splash": { "image": "./assets/splash-icon.png", "resizeMode": "contain", "backgroundColor": "#FFC21A" },
-    "ios": { "supportsTablet": false, "bundleIdentifier": "br.com.podefazer.app" },
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#FFC21A"
+    },
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "br.com.podefazer.app"
+    },
     "android": {
       "package": "br.com.podefazer.app",
-      "adaptiveIcon": { "foregroundImage": "./assets/adaptive-icon.png", "backgroundColor": "#FFC21A" },
-      "predictiveBackGestureEnabled": false
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#FFC21A"
+      },
+      "predictiveBackGestureEnabled": false,
+      "versionCode": 1
     },
-    "web": { "favicon": "./assets/favicon.png", "bundler": "metro" },
-    "plugins": ["expo-font", "expo-sharing"]
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
+    },
+    "plugins": [
+      "expo-font",
+      "expo-sharing",
+      "./plugins/withReleaseSigning"
+    ]
   }
 }

@@ -57,3 +57,11 @@ scripts/                conferência da lógica
 ## Próximas etapas (ver `../docs/estrategia.md`)
 
 P1: logo no PDF, plano grátis com limite e rodapé, assinatura pela loja, backup na nuvem, política de privacidade. P2: lojas parceiras, lembrete de resposta, recibo, aceite por link.
+
+## Gerar o APK/AAB no Windows (estado em 25/11/2026)
+
+Projeto Android gerado por `npx expo prebuild --platform android` (pasta `android/` não vai para o git). A assinatura de release vem do plugin `plugins/withReleaseSigning.js`, que lê variáveis de ambiente (nenhuma senha em arquivo): `PODEFAZER_KEYSTORE`, `PODEFAZER_KEYSTORE_PASSWORD`, `PODEFAZER_KEY_ALIAS`, `PODEFAZER_KEY_PASSWORD`. A chave de upload ficou **fora do repositório**, em `C:\Users\<usuario>\AndroidBuild\podefazer-chaves\podefazer-upload.keystore` (alias `podefazer-upload`).
+
+Comando: `cd android && gradlew.bat assembleRelease bundleRelease -PreactNativeArchitectures=arm64-v8a,armeabi-v7a` (JDK 17, Android SDK 34–36, NDK 27). Para a Play Store o arquivo certo é o `.aab` (`app/build/outputs/bundle/release`), não o APK.
+
+**Pendência:** o build compila o JavaScript e os módulos Kotlin/Java, mas para na parte C++ (`buildCMake`) por limite de caminho do Windows (260 caracteres) no `ninja` 1.10 do CMake 3.22.1 do SDK. Já testado: mover o projeto para `C:\pfa` (curto) não bastou; unidade `subst` não funciona com o autolinking. Próximo passo sugerido: instalar o CMake 3.31.6 (`sdkmanager --install "cmake;3.31.6"`, traz ninja 1.12.1; já instalado nesta máquina) e apontar o app para ele (`externalNativeBuild.cmake.version "3.31.6"` no `app/build.gradle`, via config plugin), ou gerar o build em Linux/macOS/EAS (`eas build -p android --profile production`).

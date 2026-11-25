@@ -9,3 +9,5 @@ web-build/
 *.keystore
 google-services.json
 dist-web/
+android/
+ios/
