@@ -60,7 +60,7 @@ P1: logo no PDF, plano grátis com limite e rodapé, assinatura pela loja, backu
 
 ## Gerar o APK/AAB no Windows (estado em 25/11/2026)
 
-Projeto Android gerado por `npx expo prebuild --platform android` (pasta `android/` não vai para o git). A assinatura de release vem do plugin `plugins/withReleaseSigning.js`, que lê variáveis de ambiente (nenhuma senha em arquivo): `PODEFAZER_KEYSTORE`, `PODEFAZER_KEYSTORE_PASSWORD`, `PODEFAZER_KEY_ALIAS`, `PODEFAZER_KEY_PASSWORD`. A chave de upload ficou **fora do repositório**, em `C:\Users\<usuario>\AndroidBuild\podefazer-chaves\podefazer-upload.keystore` (alias `podefazer-upload`).
+Projeto Android gerado por `npx expo prebuild --platform android` (pasta `android/` não vai para o git). A assinatura de release vem do plugin `plugins/withReleaseSigning.js`, que lê variáveis de ambiente (nenhuma senha em arquivo): `PODEFAZER_KEYSTORE`, `PODEFAZER_KEYSTORE_PASSWORD`, `PODEFAZER_KEY_ALIAS`, `PODEFAZER_KEY_PASSWORD`. A chave de upload **não está no repositório** e a que foi criada em 25/11/2026 foi descartada (nunca foi usada). Para o primeiro envio à Play Store, gere uma nova (`keytool -genkeypair -v -keystore podefazer-upload.keystore -alias podefazer-upload -keyalg RSA -keysize 2048 -validity 10000`), guarde o arquivo e a senha em local seguro (gerenciador de senhas) e use as variáveis acima. Com o Play App Signing ativo, uma chave de upload perdida pode ser trocada pelo suporte da Google.
 
 Comando: `cd android && gradlew.bat assembleRelease bundleRelease -PreactNativeArchitectures=arm64-v8a,armeabi-v7a` (JDK 17, Android SDK 34–36, NDK 27). Para a Play Store o arquivo certo é o `.aab` (`app/build/outputs/bundle/release`), não o APK.
 
