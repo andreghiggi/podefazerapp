@@ -56,15 +56,15 @@ export function BoasVindas({ perfil, escolha, outra, setEscolha, setOutra, setPe
       </View>
       <BotoesProf selecionadas={escolha} onToggle={(p) => setEscolha(escolha.indexOf(p) >= 0 ? escolha.filter((x) => x !== p) : escolha.concat(p))} />
       <Campo rotulo="Outra profissão">
-        <Entrada value={outra} onChangeText={setOutra} placeholder="Ex.: serralheiro, vidraceiro, jardineiro" />
+        <Entrada accessibilityLabel="Outra profissão" value={outra} onChangeText={setOutra} placeholder="Ex.: serralheiro, vidraceiro, jardineiro" />
       </Campo>
       {outra.trim() ? <Nota>{'Para ' + outra.trim().toLowerCase() + ' a lista começa vazia e vai se formando sozinha conforme você faz os orçamentos.'}</Nota> : null}
       <View style={{ flexDirection: 'row', gap: 10 }}>
         <Campo rotulo="Seu nome ou da empresa" style={{ flex: 1 }}>
-          <Entrada value={perfil.nome} onChangeText={(t) => setPerfil({ nome: t })} />
+          <Entrada accessibilityLabel="Seu nome ou da empresa" value={perfil.nome} onChangeText={(t) => setPerfil({ nome: t })} />
         </Campo>
         <Campo rotulo="Telefone" style={{ flex: 1 }}>
-          <Entrada value={perfil.telefone} onChangeText={(t) => setPerfil({ telefone: t })} keyboardType="phone-pad" />
+          <Entrada accessibilityLabel="Telefone" value={perfil.telefone} onChangeText={(t) => setPerfil({ telefone: t })} keyboardType="phone-pad" />
         </Campo>
       </View>
     </Tela>

@@ -341,6 +341,26 @@ export function EntradaQtd({ qtd, onChange, rotulo }: { qtd: number; onChange: (
   );
 }
 
+/** Campo de número inteiro (ex.: dias de validade): o que a pessoa digita fica no campo; ao sair, mostra o valor válido. */
+export function EntradaInteiro({ valor, onChange, rotulo, style }: { valor: number; onChange: (n: number) => void; rotulo: string; style?: StyleProp<TextStyle> }) {
+  const [txt, setTxt] = useState(String(valor));
+  const foco = useRef(false);
+  useEffect(() => {
+    if (!foco.current) setTxt(String(valor));
+  }, [valor]);
+  return (
+    <Entrada
+      accessibilityLabel={rotulo}
+      keyboardType="number-pad"
+      value={txt}
+      onFocus={() => { foco.current = true; }}
+      onChangeText={(t) => { const limpo = t.replace(/\D/g, ''); setTxt(limpo); onChange(Math.max(1, parseInt(limpo, 10) || 15)); }}
+      onBlur={() => { foco.current = false; setTxt(String(valor)); }}
+      style={[{ fontVariant: ['tabular-nums'] }, style]}
+    />
+  );
+}
+
 /** Botões − e + (o + em amarelo). */
 export function Passo({ onMenos, onMais, rotuloMenos, rotuloMais, children }: { onMenos: () => void; onMais: () => void; rotuloMenos: string; rotuloMais: string; children: React.ReactNode }) {
   const c = useCores();

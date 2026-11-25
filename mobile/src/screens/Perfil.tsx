@@ -9,7 +9,7 @@ export function Perfil({ db, setPerfil, ir, addProf, limparExemplos, zerar }: {
   db: Banco;
   setPerfil: (p: Partial<PerfilT>) => void;
   ir: (t: TelaId) => void;
-  addProf: (nome: string) => void;
+  addProf: (nome: string) => boolean;
   limparExemplos: () => void;
   zerar: () => void;
 }) {
@@ -26,15 +26,15 @@ export function Perfil({ db, setPerfil, ir, addProf, limparExemplos, zerar }: {
       </View>
 
       <Campo rotulo="Seu nome ou da empresa">
-        <Entrada value={p.nome} onChangeText={(t) => setPerfil({ nome: t })} />
+        <Entrada accessibilityLabel="Seu nome ou da empresa" value={p.nome} onChangeText={(t) => setPerfil({ nome: t })} />
       </Campo>
 
       <View style={{ flexDirection: 'row', gap: 10 }}>
         <Campo rotulo="Como aparece no orçamento" style={{ flex: 1 }}>
-          <Entrada value={p.profissao} onChangeText={(t) => setPerfil({ profissao: t })} />
+          <Entrada accessibilityLabel="Como aparece no orçamento" value={p.profissao} onChangeText={(t) => setPerfil({ profissao: t })} />
         </Campo>
         <Campo rotulo="Telefone" style={{ flex: 1 }}>
-          <Entrada value={p.telefone} onChangeText={(t) => setPerfil({ telefone: t })} keyboardType="phone-pad" />
+          <Entrada accessibilityLabel="Telefone" value={p.telefone} onChangeText={(t) => setPerfil({ telefone: t })} keyboardType="phone-pad" />
         </Campo>
       </View>
 
@@ -53,12 +53,12 @@ export function Perfil({ db, setPerfil, ir, addProf, limparExemplos, zerar }: {
         ) : null}
         <View style={{ gap: 8, paddingTop: 4 }}>
           <Entrada value={nova} onChangeText={setNova} placeholder="Outra profissão" accessibilityLabel="Outra profissão" style={{ minHeight: 46, paddingHorizontal: 10, fontSize: 15 }} />
-          <Botao variante="tracejado" icone="mais" largura onPress={() => { addProf(nova); setNova(''); }}>Adicionar profissão</Botao>
+          <Botao variante="tracejado" icone="mais" largura onPress={() => { if (addProf(nova)) setNova(''); }}>Adicionar profissão</Botao>
         </View>
       </Cartao>
 
       <Campo rotulo="Condições padrão">
-        <Entrada multiline value={p.condicoes} onChangeText={(t) => setPerfil({ condicoes: t })} />
+        <Entrada accessibilityLabel="Condições padrão" multiline value={p.condicoes} onChangeText={(t) => setPerfil({ condicoes: t })} />
       </Campo>
 
       <Nota>Tudo fica guardado só neste aparelho. Esta versão ainda não tem backup na nuvem: se trocar de celular, os orçamentos não vão junto.</Nota>

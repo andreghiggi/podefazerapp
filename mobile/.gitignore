@@ -8,3 +8,4 @@ web-build/
 *.jks
 *.keystore
 google-services.json
+dist-web/

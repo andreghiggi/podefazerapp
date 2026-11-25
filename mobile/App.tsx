@@ -165,15 +165,15 @@ function Raiz() {
     aviso(qtd ? 'Pronto! Sua lista já tem ' + qtd + ' serviços para ajustar.' : 'Pronto! Sua lista vai se formando nos orçamentos.');
   };
 
-  const addProf = (nome: string) => {
+  const addProf = (nome: string): boolean => {
     const n = capitalizar((nome || '').trim());
     if (!n) {
       aviso('Escreva o nome da profissão');
-      return;
+      return false;
     }
     if (db.perfil.profissoes.indexOf(n) >= 0) {
       aviso('Essa já está no seu perfil');
-      return;
+      return false;
     }
     const antes = db.catalogo.length;
     const depois = mesclarLista(db.catalogo, n).length;
@@ -182,6 +182,7 @@ function Raiz() {
       return { ...b, catalogo: mesclarLista(b.catalogo, n), perfil: { ...b.perfil, profissoes: profs, profissao: juntarProfs(profs) } };
     });
     aviso(depois > antes ? depois - antes + ' serviços de ' + n.toLowerCase() + ' entraram na sua lista' : n + ' adicionado ao perfil');
+    return true;
   };
 
   // Botão "voltar" do Android: o editor volta ao orçamento/início; detalhe e abas voltam ao início.

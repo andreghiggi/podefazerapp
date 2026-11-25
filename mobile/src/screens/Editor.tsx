@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { Icone } from '../components/Icone';
-import { Botao, BotaoIcone, BotaoTexto, BarraFixa, Campo, Cartao, Chip, Entrada, EntradaDinheiro, EntradaQtd, Folha, H1, H2, Passo, Tela, Txt, useAviso, useCores } from '../components/ui';
+import { Botao, BotaoIcone, BotaoTexto, BarraFixa, Campo, Cartao, Chip, Entrada, EntradaDinheiro, EntradaInteiro, EntradaQtd, Folha, H1, H2, Passo, Tela, Txt, useAviso, useCores } from '../components/ui';
 import { DIA, data, fmtQtd, lerDinheiro, numero, reais, semRS, uid } from '../lib/format';
 import { ordenarItens, total } from '../lib/orcamento';
 import { FONTE, RAIO } from '../theme';
@@ -106,10 +106,10 @@ export function Editor({ db, mudar, rascunho, setRascunho, editando, cancelar, g
 
         <View style={{ flexDirection: 'row', gap: 10 }}>
           <Campo rotulo="Cliente" style={{ flex: 1.4 }}>
-            <Entrada value={r.cliente} onChangeText={(t) => setRascunho((x) => ({ ...x, cliente: t }))} placeholder="Nome do cliente" autoComplete="off" />
+            <Entrada accessibilityLabel="Cliente" value={r.cliente} onChangeText={(t) => setRascunho((x) => ({ ...x, cliente: t }))} placeholder="Nome do cliente" autoComplete="off" />
           </Campo>
           <Campo rotulo="WhatsApp" style={{ flex: 1 }}>
-            <Entrada value={r.tel} onChangeText={(t) => setRascunho((x) => ({ ...x, tel: t }))} placeholder="(00) 00000-0000" keyboardType="phone-pad" />
+            <Entrada accessibilityLabel="WhatsApp" value={r.tel} onChangeText={(t) => setRascunho((x) => ({ ...x, tel: t }))} placeholder="(00) 00000-0000" keyboardType="phone-pad" />
           </Campo>
         </View>
 
@@ -135,17 +135,12 @@ export function Editor({ db, mudar, rascunho, setRascunho, editando, cancelar, g
             <EntradaDinheiro centavos={r.desconto || 0} rotulo="Desconto" onChange={(d) => setRascunho((x) => ({ ...x, desconto: d }))} />
           </Campo>
           <Campo rotulo="Vale por (dias)" style={{ flex: 1 }}>
-            <Entrada
-              value={String(r.validade)}
-              keyboardType="number-pad"
-              onChangeText={(t) => setRascunho((x) => ({ ...x, validade: Math.max(1, parseInt(t, 10) || 15) }))}
-              style={{ fontVariant: ['tabular-nums'] }}
-            />
+            <EntradaInteiro valor={r.validade} rotulo="Vale por (dias)" onChange={(n) => setRascunho((x) => ({ ...x, validade: n }))} />
           </Campo>
         </View>
 
         <Campo rotulo="Condições">
-          <Entrada multiline value={r.condicoes != null ? r.condicoes : db.perfil.condicoes} onChangeText={(t) => setRascunho((x) => ({ ...x, condicoes: t }))} />
+          <Entrada accessibilityLabel="Condições" multiline value={r.condicoes != null ? r.condicoes : db.perfil.condicoes} onChangeText={(t) => setRascunho((x) => ({ ...x, condicoes: t }))} />
         </Campo>
       </Tela>
 
