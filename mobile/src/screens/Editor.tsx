@@ -3,7 +3,7 @@ import { Pressable, ScrollView, Text, View } from 'react-native';
 import { Icone } from '../components/Icone';
 import { Botao, BotaoIcone, BotaoTexto, BarraFixa, Campo, Cartao, Chip, Entrada, EntradaDinheiro, EntradaInteiro, EntradaQtd, Folha, H1, H2, Passo, Tela, Txt, useAviso, useCores } from '../components/ui';
 import { DIA, data, fmtQtd, lerDinheiro, numero, reais, semRS, uid } from '../lib/format';
-import { ordenarItens, total } from '../lib/orcamento';
+import { ordenarItens, temServico, total } from '../lib/orcamento';
 import { FONTE, RAIO } from '../theme';
 import { Banco, Item, Orcamento } from '../types';
 
@@ -21,6 +21,9 @@ export function Editor({ db, mudar, rascunho, setRascunho, editando, cancelar, g
   const c = useCores();
   const aviso = useAviso();
   const [folha, setFolha] = useState(false);
+  const [criando, setCriando] = useState(false);
+  const [servNome, setServNome] = useState('');
+  const [servPreco, setServPreco] = useState('');
   const [matNome, setMatNome] = useState('');
   const [matQtd, setMatQtd] = useState('1');
   const [matPreco, setMatPreco] = useState('');
@@ -41,8 +44,20 @@ export function Editor({ db, mudar, rascunho, setRascunho, editando, cancelar, g
     setMatNome(''); setMatQtd('1'); setMatPreco('');
   };
 
+  const criarServico = () => {
+    const nome = servNome.trim();
+    if (!nome) { aviso('Escreva o nome do serviço'); return; }
+    const preco = lerDinheiro(servPreco);
+    if (preco <= 0) { aviso('Informe o preço do serviço'); return; }
+    const novo = { id: uid(), nome, preco, un: '', cat: db.perfil.profissoes[0] || 'Meus serviços' };
+    mudar((b) => ({ ...b, catalogo: b.catalogo.concat(novo) }));
+    setRascunho((x) => ({ ...x, itens: ordenarItens(x.itens.concat({ tipo: 'servico', catId: novo.id, nome, qtd: 1, preco, un: '' })) }));
+    setServNome(''); setServPreco(''); setCriando(false);
+    aviso('Criado e salvo na sua lista');
+  };
+
   const tentarGerar = () => {
-    if (!r.itens.length) { aviso('Coloque pelo menos um serviço ou material'); return; }
+    if (!temServico(r)) { aviso('Coloque pelo menos um serviço no orçamento'); return; }
     gerar();
   };
 
@@ -116,7 +131,18 @@ export function Editor({ db, mudar, rascunho, setRascunho, editando, cancelar, g
         <Cartao style={{ paddingTop: 4, paddingBottom: 12 }}>
           <H2 style={{ paddingTop: 10, paddingBottom: 6 }}>Serviços</H2>
           {serv.length ? serv.map(linhaItem) : <Txt suave style={{ fontSize: 13, paddingTop: 14, paddingBottom: 6 }}>Escolha os serviços da sua lista. O preço já vem preenchido.</Txt>}
-          <Botao variante="tracejado" icone="mais" largura style={{ marginTop: 12 }} onPress={() => setFolha(true)}>Adicionar serviço</Botao>
+          <Botao variante="tracejado" icone="mais" largura style={{ marginTop: 12 }} onPress={() => setFolha(true)}>Adicionar da minha lista</Botao>
+          {criando ? (
+            <View style={{ gap: 8, marginTop: 12, paddingTop: 12, borderTopWidth: 1, borderTopColor: c.linha }}>
+              <Txt forte>Serviço novo</Txt>
+              <Entrada value={servNome} onChangeText={setServNome} autoFocus placeholder="Nome do serviço" accessibilityLabel="Nome do serviço novo" style={{ minHeight: 42, paddingHorizontal: 10, fontSize: 14 }} />
+              <Entrada value={servPreco} onChangeText={setServPreco} keyboardType="decimal-pad" placeholder="R$ 0,00" accessibilityLabel="Preço do serviço novo" onSubmitEditing={criarServico} style={{ minHeight: 42, paddingHorizontal: 10, fontSize: 14 }} />
+              <Botao largura onPress={criarServico}>Criar e colocar no orçamento</Botao>
+              <BotaoTexto onPress={() => { setCriando(false); setServNome(''); setServPreco(''); }} style={{ alignSelf: 'center' }}>Cancelar</BotaoTexto>
+            </View>
+          ) : (
+            <Botao variante="tracejado" icone="mais" largura style={{ marginTop: 8 }} onPress={() => setCriando(true)}>Criar serviço novo</Botao>
+          )}
         </Cartao>
 
         <Cartao style={{ paddingTop: 4, paddingBottom: 12 }}>
@@ -187,6 +213,7 @@ function FolhaCatalogo({ aberta, fechar, db, mudar, rascunho: r, setRascunho, no
   const criar = () => {
     const nome = (csNome || busca).trim();
     if (!nome) { aviso('Escreva o nome do serviço'); return; }
+    if (lerDinheiro(csPreco) <= 0) { aviso('Informe o preço do serviço'); return; }
     const novo = { id: uid(), nome, preco: lerDinheiro(csPreco), un: '', cat: db.perfil.profissoes[0] || 'Meus serviços' };
     mudar((b) => ({ ...b, catalogo: b.catalogo.concat(novo) }));
     setRascunho((x) => ({ ...x, itens: ordenarItens(x.itens.concat({ tipo: 'servico', catId: novo.id, nome: novo.nome, qtd: 1, preco: novo.preco, un: '' })) }));

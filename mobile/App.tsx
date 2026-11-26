@@ -10,8 +10,8 @@ import React, { useEffect, useState } from 'react';
 import { BackHandler, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AvisoProvider, DadosDialogo, Dialogo, TemaProvider, useAviso, useCores } from './src/components/ui';
-import { capitalizar, juntarProfs, uid } from './src/lib/format';
-import { ROTULO, mesclarLista, novoRascunho, ordenarItens } from './src/lib/orcamento';
+import { juntarProfs, lerDinheiro, uid } from './src/lib/format';
+import { ROTULO, mesclarLista, novoCadastro, novoRascunho, ordenarItens, precisaServico, profCanonica, temServico } from './src/lib/orcamento';
 import { BoasVindas } from './src/screens/BoasVindas';
 import { Detalhe } from './src/screens/Detalhe';
 import { Editor } from './src/screens/Editor';
@@ -35,6 +35,7 @@ function Raiz() {
   const [dialogo, setDialogo] = useState<DadosDialogo | null>(null);
   const [escolhaProf, setEscolhaProf] = useState<string[]>([]);
   const [outraProf, setOutraProf] = useState('');
+  const [primeiro, setPrimeiro] = useState({ nome: '', preco: '' });
 
   const ir = (t: TelaApp) => {
     setTela(t);
@@ -64,7 +65,7 @@ function Raiz() {
   };
 
   const gerar = () => {
-    if (!rascunho || !rascunho.itens.length) return;
+    if (!rascunho || !temServico(rascunho)) return;
     const r = { ...rascunho, itens: ordenarItens(rascunho.itens) };
     const existe = db.orcamentos.some((o) => o.id === r.id);
     mudar((b) =>
@@ -123,6 +124,7 @@ function Raiz() {
         setTela('inicio');
         setEscolhaProf([]);
         setOutraProf('');
+        setPrimeiro({ nome: '', preco: '' });
       },
     });
 
@@ -135,29 +137,37 @@ function Raiz() {
       aviso('Informe seu telefone com DDD');
       return;
     }
-    const profs = escolhaProf.slice();
-    const outra = outraProf.trim();
-    if (outra) profs.push(capitalizar(outra));
+    const outra = profCanonica(outraProf);
+    const profs = outra && escolhaProf.indexOf(outra) < 0 ? escolhaProf.concat(outra) : escolhaProf.slice();
     if (!profs.length) {
       aviso('Escolha pelo menos uma profissão');
       return;
     }
-    let qtd = 0;
-    mudar((b) => {
-      let cat = b.catalogo;
-      profs.forEach((p) => {
-        cat = mesclarLista(cat, p);
-      });
-      qtd = cat.length;
-      return { ...b, catalogo: cat, perfil: { ...b.perfil, profissoes: profs, profissao: juntarProfs(profs), exemplo: false } };
-    });
+    // profissão nova (sem lista pronta): o primeiro serviço é cadastrado aqui mesmo
+    const nova = precisaServico([], outra);
+    if (nova && !primeiro.nome.trim()) {
+      aviso('Cadastre o primeiro serviço de ' + outra.toLowerCase());
+      return;
+    }
+    if (nova && lerDinheiro(primeiro.preco) <= 0) {
+      aviso('Informe o preço do serviço');
+      return;
+    }
+    const servico = nova ? { prof: outra, nome: primeiro.nome, preco: lerDinheiro(primeiro.preco) } : undefined;
+    const qtd = novoCadastro(db, profs, servico).catalogo.length;
+    mudar((b) => novoCadastro(b, profs, servico));
+    setRascunho(null);
+    setAbertoId(null);
+    setEscolhaProf([]);
+    setOutraProf('');
+    setPrimeiro({ nome: '', preco: '' });
     setFiltro('todos');
     ir('inicio');
-    aviso(qtd ? 'Pronto! Sua lista já tem ' + qtd + ' serviços para ajustar.' : 'Pronto! Sua lista vai se formando nos orçamentos.');
+    aviso('Pronto! Sua lista já tem ' + qtd + (qtd === 1 ? ' serviço.' : ' serviços para ajustar.'));
   };
 
-  const addProf = (nome: string): boolean => {
-    const n = capitalizar((nome || '').trim());
+  const addProf = (nome: string, servico?: { nome: string; preco: number }): boolean => {
+    const n = profCanonica(nome);
     if (!n) {
       aviso('Escreva o nome da profissão');
       return false;
@@ -166,13 +176,23 @@ function Raiz() {
       aviso('Essa já está no seu perfil');
       return false;
     }
-    const antes = db.catalogo.length;
-    const depois = mesclarLista(db.catalogo, n).length;
+    const nova = precisaServico(db.catalogo, n);
+    if (nova && !servico?.nome.trim()) {
+      aviso('Cadastre o primeiro serviço de ' + n.toLowerCase());
+      return false;
+    }
+    if (nova && !(servico && servico.preco > 0)) {
+      aviso('Informe o preço do serviço');
+      return false;
+    }
+    const juntar = (cat: typeof db.catalogo) =>
+      nova && servico ? cat.concat({ id: uid(), nome: servico.nome.trim(), preco: servico.preco, un: '', cat: n }) : mesclarLista(cat, n);
+    const entraram = juntar(db.catalogo).length - db.catalogo.length;
     mudar((b) => {
       const profs = b.perfil.profissoes.concat(n);
-      return { ...b, catalogo: mesclarLista(b.catalogo, n), perfil: { ...b.perfil, profissoes: profs, profissao: juntarProfs(profs) } };
+      return { ...b, catalogo: juntar(b.catalogo), perfil: { ...b.perfil, profissoes: profs, profissao: juntarProfs(profs) } };
     });
-    aviso(depois > antes ? depois - antes + ' serviços de ' + n.toLowerCase() + ' entraram na sua lista' : n + ' adicionado ao perfil');
+    aviso(entraram > 1 ? entraram + ' serviços de ' + n.toLowerCase() + ' entraram na sua lista' : n + ' adicionado ao perfil');
     return true;
   };
 
@@ -198,7 +218,7 @@ function Raiz() {
 
   let conteudo: React.ReactNode;
   if (precisaBoasVindas) {
-    conteudo = <BoasVindas perfil={db.perfil} escolha={escolhaProf} outra={outraProf} setEscolha={setEscolhaProf} setOutra={setOutraProf} setPerfil={setPerfil} comecar={comecar} />;
+    conteudo = <BoasVindas perfil={db.perfil} escolha={escolhaProf} outra={outraProf} setEscolha={setEscolhaProf} setOutra={setOutraProf} primeiro={primeiro} setPrimeiro={setPrimeiro} setPerfil={setPerfil} comecar={comecar} />;
   } else if (tela === 'editor' && rascunho) {
     conteudo = (
       <Editor db={db} mudar={mudar} rascunho={rascunho} setRascunho={atualizaRascunho} editando={db.orcamentos.some((o) => o.id === rascunho.id)} cancelar={cancelar} gerar={gerar} />

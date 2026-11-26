@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { ScrollView, View } from 'react-native';
 import { Botao, Campo, Cartao, Chip, Entrada, H1, H2, NavInferior, Nota, Tela, Txt } from '../components/ui';
 import { PROFS } from '../data/listas';
+import { lerDinheiro } from '../lib/format';
+import { precisaServico, profCanonica } from '../lib/orcamento';
 import { Banco, Perfil as PerfilT } from '../types';
 import { TelaId } from './Inicio';
 
@@ -9,11 +11,18 @@ export function Perfil({ db, setPerfil, ir, addProf, zerar }: {
   db: Banco;
   setPerfil: (p: Partial<PerfilT>) => void;
   ir: (t: TelaId) => void;
-  addProf: (nome: string) => boolean;
+  addProf: (nome: string, servico?: { nome: string; preco: number }) => boolean;
   zerar: () => void;
 }) {
   const p = db.perfil;
   const [nova, setNova] = useState('');
+  const [servNome, setServNome] = useState('');
+  const [servPreco, setServPreco] = useState('');
+  const pedeServico = precisaServico(db.catalogo, profCanonica(nova));
+  const adicionar = () => {
+    if (!addProf(nova, pedeServico ? { nome: servNome, preco: lerDinheiro(servPreco) } : undefined)) return;
+    setNova(''); setServNome(''); setServPreco('');
+  };
   const faltam = PROFS.filter((x) => p.profissoes.indexOf(x) < 0);
 
   return (
@@ -55,7 +64,14 @@ export function Perfil({ db, setPerfil, ir, addProf, zerar }: {
         ) : null}
         <View style={{ gap: 8, paddingTop: 4 }}>
           <Entrada value={nova} onChangeText={setNova} placeholder="Outra profissão" accessibilityLabel="Outra profissão" style={{ minHeight: 42, paddingHorizontal: 10, fontSize: 14 }} />
-          <Botao variante="tracejado" icone="mais" largura onPress={() => { if (addProf(nova)) setNova(''); }}>Adicionar profissão</Botao>
+          {pedeServico ? (
+            <>
+              <Txt peq suave>Essa área é nova: cadastre o primeiro serviço dela.</Txt>
+              <Entrada value={servNome} onChangeText={setServNome} placeholder="Nome do serviço" accessibilityLabel="Nome do primeiro serviço" style={{ minHeight: 42, paddingHorizontal: 10, fontSize: 14 }} />
+              <Entrada value={servPreco} onChangeText={setServPreco} keyboardType="decimal-pad" placeholder="R$ 0,00" accessibilityLabel="Preço do primeiro serviço" style={{ minHeight: 42, paddingHorizontal: 10, fontSize: 14 }} />
+            </>
+          ) : null}
+          <Botao variante="tracejado" icone="mais" largura onPress={adicionar}>Adicionar profissão</Botao>
         </View>
       </Cartao>
 

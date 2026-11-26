@@ -260,34 +260,13 @@ textarea.entrada { padding: 12px 14px; min-height: 96px; resize: vertical; line-
     listaDe(prof).forEach(function (s) { if (!tem[s.nome.toLowerCase()]) db.catalogo.push(s); });
   }
   function seed() {
-    var agora = Date.now();
-    var cat = LISTAS["Eletricista"].map(function (c, i) { return { id: "s" + (i + 1), nome: c[0], preco: c[1], un: "", cat: "Eletricista" }; });
     return {
       v: 2,
-      perfil: { nome: "Carlos Mendes", profissao: "Eletricista", profissoes: ["Eletricista"], telefone: "(11) 98888-1234", cidade: "",
-        condicoes: "Pagamento: Pix ou dinheiro, metade no início e metade ao final do serviço.\nGarantia de 90 dias sobre o serviço executado.", exemplo: true },
-      catalogo: cat,
-      proxNum: 16,
-      orcamentos: [
-        { id: "o15", num: 15, cliente: "Dona Marta Ribeiro", tel: "(11) 97777-5678", criadoEm: agora, status: "esperando", validade: 15, desconto: 1020, exemplo: true,
-          condicoes: null, itens: [
-            { tipo: "servico", catId: "s4", nome: "Instalação de chuveiro", qtd: 1, preco: 12000 },
-            { tipo: "servico", catId: "s1", nome: "Troca de tomada", qtd: 3, preco: 4500 },
-            { tipo: "material", nome: "Disjuntor 32A", qtd: 1, preco: 3850 },
-            { tipo: "material", nome: "Tomada 10A com espelho", qtd: 3, preco: 1890 }] },
-        { id: "o14", num: 14, cliente: "Padaria Pão Quente", tel: "", criadoEm: agora - DIA, status: "aprovado", validade: 15, desconto: 0, exemplo: true,
-          condicoes: null, itens: [
-            { tipo: "servico", catId: "s9", nome: "Montagem de quadro de distribuição", qtd: 1, preco: 45000 },
-            { tipo: "servico", catId: "s8", nome: "Troca de disjuntor", qtd: 4, preco: 8000 },
-            { tipo: "material", nome: "Disjuntor 32A", qtd: 4, preco: 3850 },
-            { tipo: "material", nome: "Quadro de embutir para 12 disjuntores", qtd: 1, preco: 35600 }] },
-        { id: "o13", num: 13, cliente: "Seu João Batista", tel: "", criadoEm: agora - 4 * DIA, status: "aprovado", validade: 15, desconto: 0, exemplo: true,
-          condicoes: null, itens: [
-            { tipo: "servico", nome: "Troca da fiação da sala", qtd: 1, preco: 42000 },
-            { tipo: "material", nome: "Cabo flexível 2,5 mm (rolo 100 m)", qtd: 1, preco: 20000 }] },
-        { id: "o12", num: 12, cliente: "Ana Paula Lima", tel: "", criadoEm: agora - 6 * DIA, status: "recusado", validade: 15, desconto: 0, exemplo: true,
-          condicoes: null, itens: [{ tipo: "servico", catId: "s7", nome: "Ventilador de teto", qtd: 1, preco: 15000 }] }
-      ]
+      perfil: { nome: "", profissao: "", profissoes: [], telefone: "", cidade: "",
+        condicoes: "Pagamento: Pix ou dinheiro, metade no início e metade ao final do serviço.\nGarantia de 90 dias sobre o serviço executado." },
+      catalogo: [],
+      proxNum: 1,
+      orcamentos: []
     };
   }
   var db = null;
@@ -297,6 +276,13 @@ textarea.entrada { padding: 12px 14px; min-height: 96px; resize: vertical; line-
     db.catalogo.forEach(function (s) { s.cat = db.perfil.profissoes[0]; s.un = s.un || ""; });
   }
   if (!db || db.v !== 2) db = seed();
+  if (db.perfil.exemplo) db = seed(); // quem abriu a versão antiga, com dados de exemplo, recomeça vazio
+  db.orcamentos = db.orcamentos.filter(function (o) { return !o.exemplo; });
+  function temServico(r) { return r.itens.some(function (i) { return i.tipo === "servico"; }); }
+  function profCanonica(n) {
+    n = (n || "").trim(); if (!n) return "";
+    return PROFS.filter(function (p) { return p.toLowerCase() === n.toLowerCase(); })[0] || n.charAt(0).toUpperCase() + n.slice(1);
+  }
   function salvar() { try { localStorage.setItem(CHAVE, JSON.stringify(db)); } catch (e) { /* sem armazenamento: segue na memória */ } }
 
   // ---------- utilidades ----------
@@ -396,7 +382,7 @@ textarea.entrada { padding: 12px 14px; min-height: 96px; resize: vertical; line-
       '<div class="grade-2" style="grid-template-columns:minmax(0,1.4fr) minmax(0,1fr)"><div class="campo"><label for="cliente">Cliente</label><input class="entrada" id="cliente" data-campo="cliente" autocomplete="off" placeholder="Nome do cliente" value="' + esc(r.cliente) + '"></div>' +
       '<div class="campo"><label for="tel">WhatsApp</label><input class="entrada" id="tel" data-campo="tel" inputmode="tel" placeholder="(00) 00000-0000" value="' + esc(r.tel) + '"></div></div>' +
       '<section class="cartao secao"><h2>Serviços</h2>' + (serv.length ? serv.join("") : '<p class="vazio">Escolha os serviços da sua lista. O preço já vem preenchido.</p>') +
-      '<button class="btn btn-tracejado" style="margin-top:12px" data-acao="abrir-folha">' + ico(I.mais, 20) + "Adicionar serviço</button></section>" +
+      '<button class="btn btn-tracejado" style="margin-top:12px" data-acao="abrir-folha">' + ico(I.mais, 20) + "Adicionar serviço</button>" + '<button class="btn btn-tracejado" style="margin-top:8px" data-acao="abrir-criar">' + ico(I.mais, 20) + "Criar serviço novo</button>" + (ui.criando ? '<div class="novo-material" style="grid-template-columns:minmax(0,1fr) 104px"><input id="ed-nome" placeholder="Nome do serviço" aria-label="Nome do serviço novo"><input id="ed-preco" inputmode="decimal" placeholder="R$ 0,00" aria-label="Preço do serviço novo"><button class="btn btn-principal" data-acao="criar-serv-tela">Criar e colocar no orçamento</button></div>' : "") + "</section>" +
       '<section class="cartao secao"><h2>Materiais</h2>' + (mat.length ? mat.join("") : '<p class="vazio">Opcional. Coloque o material se for você que vai comprar.</p>') +
       '<div class="novo-material"><input id="mat-nome" placeholder="Material" aria-label="Nome do material"><input id="mat-qtd" inputmode="numeric" value="1" aria-label="Quantidade"><input id="mat-preco" inputmode="decimal" placeholder="R$ 0,00" aria-label="Preço unitário"><button class="btn btn-tracejado" data-acao="add-material">' + ico(I.mais, 20) + "Adicionar material</button></div></section>" +
       '<div class="grade-2"><div class="campo"><label for="desconto">Desconto (R$)</label><input class="entrada num" id="desconto" data-campo="desconto" inputmode="decimal" value="' + semRS(r.desconto || 0) + '"></div>' +
@@ -486,7 +472,7 @@ textarea.entrada { padding: 12px 14px; min-height: 96px; resize: vertical; line-
       '<section style="display:flex;flex-direction:column;gap:6px"><h1>Qual é o seu serviço?</h1><p class="suave">Escolha um ou mais. O app já traz os serviços mais comuns da sua área com preços de exemplo para você ajustar.</p></section>' +
       botoesProf(ui.escolhaProf, "prof-toggle") +
       '<div class="campo"><label for="outra-prof">Outra profissão</label><input class="entrada" id="outra-prof" data-campo="outra-prof" placeholder="Ex.: serralheiro, vidraceiro, jardineiro" value="' + esc(ui.outraProf) + '"></div>' +
-      (ui.outraProf.trim() ? '<p class="nota">Para ' + esc(ui.outraProf.trim().toLowerCase()) + ' a lista começa vazia e vai se formando sozinha conforme você faz os orçamentos.</p>' : "") +
+      (ui.outraProf.trim() ? '<div id="primeiro-serv" class="campo"' + (LISTAS[profCanonica(ui.outraProf)] ? " hidden" : "") + '><p class="nota">Área nova: cadastre pelo menos um serviço para começar.</p><label for="prim-nome">Nome do serviço</label><input class="entrada" id="prim-nome" data-campo="prim-nome" value="' + esc(ui.primNome || "") + '"><label for="prim-preco">Preço</label><input class="entrada" id="prim-preco" data-campo="prim-preco" inputmode="decimal" placeholder="R$ 0,00" value="' + esc(ui.primPreco || "") + '"></div>' : "") +
       '<div class="grade-2"><div class="campo"><label for="p-nome">Seu nome ou da empresa</label><input class="entrada" id="p-nome" data-campo="p-nome" value="' + esc(p.nome) + '"></div>' +
       '<div class="campo"><label for="p-tel">Telefone</label><input class="entrada" id="p-tel" data-campo="p-telefone" inputmode="tel" value="' + esc(p.telefone) + '"></div></div>' +
       '<div class="barra"><div class="barra-dentro"><button class="btn btn-principal largura" data-acao="comecar">Começar</button></div></div>';
@@ -501,7 +487,7 @@ textarea.entrada { padding: 12px 14px; min-height: 96px; resize: vertical; line-
       '<div class="campo"><label for="p-tel">Telefone</label><input class="entrada" id="p-tel" data-campo="p-telefone" inputmode="tel" value="' + esc(p.telefone) + '"></div></div>' +
       '<section class="cartao" style="display:flex;flex-direction:column;gap:10px"><h2>Suas profissões</h2><div class="filtros" style="flex-wrap:wrap">' + p.profissoes.map(function (x) { return '<span class="chip" style="display:inline-flex;align-items:center;background:var(--amarelo-claro);border-color:var(--amarelo-fita);font-weight:600">' + esc(x) + "</span>"; }).join("") + "</div>" +
       (faltam.length ? '<span class="peq suave">Faz mais coisa? Toque para trazer os serviços dessa área para a sua lista:</span><div class="filtros" style="flex-wrap:wrap">' + faltam.map(function (x) { return '<button class="chip" data-acao="add-prof" data-valor="' + esc(x) + '">+ ' + esc(x) + "</button>"; }).join("") + "</div>" : "") +
-      '<div class="novo-material" style="grid-template-columns:minmax(0,1fr);padding-top:4px"><input id="nova-prof" placeholder="Outra profissão" aria-label="Outra profissão"><button class="btn btn-tracejado" data-acao="add-prof-outra">' + ico(I.mais, 20) + "Adicionar profissão</button></div></section>" +
+      '<div class="novo-material" style="grid-template-columns:minmax(0,1fr);padding-top:4px"><input id="nova-prof" placeholder="Outra profissão" aria-label="Outra profissão"><input id="prof-serv" placeholder="Se for área nova: nome do 1º serviço" aria-label="Nome do primeiro serviço"><input id="prof-preco" inputmode="decimal" placeholder="Preço do 1º serviço" aria-label="Preço do primeiro serviço"><button class="btn btn-tracejado" data-acao="add-prof-outra">' + ico(I.mais, 20) + "Adicionar profissão</button></div></section>" +
       '<div class="campo"><label for="p-cond">Condições padrão</label><textarea class="entrada" id="p-cond" data-campo="p-condicoes">' + esc(p.condicoes) + "</textarea></div>" +
       '<p class="nota">Tudo fica guardado só neste aparelho, neste navegador. É um protótipo: o app de verdade terá backup.</p>' +
       (temExemplo ? '<button class="btn btn-principal largura" data-acao="limpar-exemplos">Apagar exemplos e começar</button>' : "") +
@@ -583,7 +569,7 @@ textarea.entrada { padding: 12px 14px; min-height: 96px; resize: vertical; line-
       ordenarItens(r); render(); var nn = document.getElementById("mat-nome"); if (nn) nn.focus();
     }
     else if (a === "gerar") {
-      if (!r.itens.length) { aviso("Coloque pelo menos um serviço ou material"); return; }
+      if (!temServico(r)) { aviso("Coloque pelo menos um serviço no orçamento"); return; }
       var pos = -1; db.orcamentos.forEach(function (o, i) { if (o.id === r.id) pos = i; });
       if (pos >= 0) { db.orcamentos[pos] = r; ui.recemFeito = false; }
       else { db.orcamentos.push(r); db.proxNum = Math.max(db.proxNum, r.num + 1); ui.recemFeito = true; }
@@ -625,20 +611,41 @@ textarea.entrada { padding: 12px 14px; min-height: 96px; resize: vertical; line-
       if (pi >= 0) ui.escolhaProf.splice(pi, 1); else ui.escolhaProf.push(pv); render();
     }
     else if (a === "comecar") {
-      var profs = ui.escolhaProf.slice(), outra = ui.outraProf.trim();
-      if (outra) profs.push(outra.charAt(0).toUpperCase() + outra.slice(1));
+      var profs = ui.escolhaProf.slice(), outra = profCanonica(ui.outraProf);
+      if (outra && profs.indexOf(outra) < 0) profs.push(outra);
       if (!profs.length) { aviso("Escolha pelo menos uma profissão"); return; }
+      var nova = outra && !LISTAS[outra];
+      if (nova && !(ui.primNome || "").trim()) { aviso("Cadastre o primeiro serviço de " + outra.toLowerCase()); return; }
+      if (nova && lerDinheiro(ui.primPreco || "") <= 0) { aviso("Informe o preço do serviço"); return; }
       db.perfil.profissoes = profs; db.perfil.profissao = juntarProfs(profs); db.perfil.exemplo = false;
-      profs.forEach(mesclarLista); salvar(); ui.catFiltro = "Todos"; ir("inicio");
-      aviso(db.catalogo.length ? "Pronto! Sua lista já tem " + db.catalogo.length + " serviços para ajustar." : "Pronto! Sua lista vai se formando nos orçamentos.");
+      db.orcamentos = []; db.proxNum = 1; db.catalogo = []; profs.forEach(mesclarLista);
+      if (nova) db.catalogo.push({ id: uid(), nome: ui.primNome.trim(), preco: lerDinheiro(ui.primPreco), un: "", cat: outra });
+      ui.escolhaProf = []; ui.outraProf = ""; ui.primNome = ""; ui.primPreco = ""; ui.rascunho = null;
+      salvar(); ui.catFiltro = "Todos"; ir("inicio");
+      aviso("Pronto! Sua lista já tem " + db.catalogo.length + (db.catalogo.length === 1 ? " serviço." : " serviços para ajustar."));
     }
     else if (a === "add-prof" || a === "add-prof-outra") {
       var np2 = a === "add-prof" ? alvo.getAttribute("data-valor") : (document.getElementById("nova-prof").value || "").trim();
       if (!np2) { aviso("Escreva o nome da profissão"); return; }
       np2 = np2.charAt(0).toUpperCase() + np2.slice(1);
       if (db.perfil.profissoes.indexOf(np2) >= 0) { aviso("Essa já está no seu perfil"); return; }
+      np2 = profCanonica(np2);
+      if (!LISTAS[np2] && !db.catalogo.some(function (s) { return s.cat === np2; })) {
+        var en = document.getElementById("prof-serv"), ep = document.getElementById("prof-preco");
+        if (!en.value.trim() || lerDinheiro(ep.value) <= 0) { aviso("Profissão nova: informe o primeiro serviço e o preço"); en.focus(); return; }
+        db.catalogo.push({ id: uid(), nome: en.value.trim(), preco: lerDinheiro(ep.value), un: "", cat: np2 });
+      }
       var antes = db.catalogo.length; db.perfil.profissoes.push(np2); db.perfil.profissao = juntarProfs(db.perfil.profissoes); mesclarLista(np2); salvar(); render();
       aviso(db.catalogo.length > antes ? (db.catalogo.length - antes) + " serviços de " + np2.toLowerCase() + " entraram na sua lista" : np2 + " adicionado ao perfil");
+    }
+    else if (a === "abrir-criar") { ui.criando = !ui.criando; render(); var f1 = document.getElementById("ed-nome"); if (f1) f1.focus(); }
+    else if (a === "criar-serv-tela") {
+      var en2 = document.getElementById("ed-nome"), ep2 = document.getElementById("ed-preco");
+      if (!en2.value.trim()) { aviso("Escreva o nome do serviço"); en2.focus(); return; }
+      if (lerDinheiro(ep2.value) <= 0) { aviso("Informe o preço do serviço"); ep2.focus(); return; }
+      var nv = { id: uid(), nome: en2.value.trim(), preco: lerDinheiro(ep2.value), un: "", cat: db.perfil.profissoes[0] || "Meus serviços" };
+      db.catalogo.push(nv); r.itens.push({ tipo: "servico", catId: nv.id, nome: nv.nome, qtd: 1, preco: nv.preco, un: "" });
+      ui.criando = false; ordenarItens(r); salvar(); render(); aviso("Criado e salvo na sua lista");
     }
     else if (a === "criar-serv") {
       var cn = document.getElementById("cs-nome"), cp = document.getElementById("cs-preco");
@@ -652,7 +659,7 @@ textarea.entrada { padding: 12px 14px; min-height: 96px; resize: vertical; line-
       if (sc2) { sc2.preco = iu.preco; salvar(); render(); aviso("Preço atualizado na sua lista"); }
     }
     else if (a === "zerar") {
-      ui.dialogo = { titulo: "Apagar tudo?", texto: "Some tudo deste aparelho: orçamentos, serviços e perfil. Volta ao começo com os exemplos.", sim: "Apagar tudo",
+      ui.dialogo = { titulo: "Apagar tudo?", texto: "Some tudo deste aparelho: orçamentos, serviços e perfil. Volta ao cadastro inicial.", sim: "Apagar tudo",
         fazer: function () { try { localStorage.removeItem(CHAVE); } catch (e) {} db = seed(); ui.tela = "inicio"; } };
       render();
     }
@@ -662,6 +669,8 @@ textarea.entrada { padding: 12px 14px; min-height: 96px; resize: vertical; line-
 
   document.addEventListener("input", function (ev) {
     var el = ev.target, campo = el.getAttribute && el.getAttribute("data-campo"); if (!campo) return;
+    if (campo === "prim-nome") { ui.primNome = el.value; return; }
+    if (campo === "prim-preco") { ui.primPreco = el.value; return; }
     var r = ui.rascunho;
     if (campo === "cliente") r.cliente = el.value;
     else if (campo === "tel") r.tel = el.value;

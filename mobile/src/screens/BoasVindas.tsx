@@ -1,9 +1,10 @@
 import React from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { Icone, Simbolo } from '../components/Icone';
-import { BarraFixa, Botao, Campo, Entrada, H1, Nota, Tela, Topo, Txt, useAviso, useCores } from '../components/ui';
+import { BarraFixa, Botao, Campo, Cartao, Entrada, H1, H2, Tela, Topo, Txt, useAviso, useCores } from '../components/ui';
 import { entrarComGoogle, googleDisponivel } from '../lib/google';
 import { PROFS } from '../data/listas';
+import { precisaServico, profCanonica } from '../lib/orcamento';
 import { FONTE, RAIO } from '../theme';
 import { Perfil } from '../types';
 
@@ -33,17 +34,20 @@ export function BotoesProf({ selecionadas, onToggle }: { selecionadas: string[];
   );
 }
 
-export function BoasVindas({ perfil, escolha, outra, setEscolha, setOutra, setPerfil, comecar }: {
+export function BoasVindas({ perfil, escolha, outra, setEscolha, setOutra, primeiro, setPrimeiro, setPerfil, comecar }: {
   perfil: Perfil;
   escolha: string[];
   outra: string;
   setEscolha: (p: string[]) => void;
   setOutra: (t: string) => void;
+  primeiro: { nome: string; preco: string };
+  setPrimeiro: (p: { nome: string; preco: string }) => void;
   setPerfil: (p: Partial<Perfil>) => void;
   comecar: () => void;
 }) {
   const c = useCores();
   const aviso = useAviso();
+  const nova = profCanonica(outra);
   const [entrando, setEntrando] = React.useState(false);
   const google = async () => {
     setEntrando(true);
@@ -92,7 +96,18 @@ export function BoasVindas({ perfil, escolha, outra, setEscolha, setOutra, setPe
       <Campo rotulo="Outra profissão">
         <Entrada accessibilityLabel="Outra profissão" value={outra} onChangeText={setOutra} placeholder="Ex.: serralheiro, vidraceiro, jardineiro" />
       </Campo>
-      {outra.trim() ? <Nota>{'Para ' + outra.trim().toLowerCase() + ' a lista começa vazia e vai se formando sozinha conforme você faz os orçamentos.'}</Nota> : null}
+      {precisaServico([], nova) ? (
+        <Cartao style={{ gap: 10 }}>
+          <H2>{'Seu primeiro serviço de ' + nova.toLowerCase()}</H2>
+          <Txt peq suave>Ainda não temos lista pronta para essa área. Cadastre pelo menos um serviço para começar; os outros você cria quando quiser.</Txt>
+          <Campo rotulo="Nome do serviço">
+            <Entrada accessibilityLabel="Nome do primeiro serviço" value={primeiro.nome} onChangeText={(t) => setPrimeiro({ ...primeiro, nome: t })} />
+          </Campo>
+          <Campo rotulo="Preço">
+            <Entrada accessibilityLabel="Preço do primeiro serviço" value={primeiro.preco} onChangeText={(t) => setPrimeiro({ ...primeiro, preco: t })} keyboardType="decimal-pad" placeholder="R$ 0,00" />
+          </Campo>
+        </Cartao>
+      ) : null}
     </Tela>
   );
 }

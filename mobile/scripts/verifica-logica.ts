@@ -2,7 +2,7 @@
 // Rodar (na pasta mobile): npx -y tsx scripts/verifica-logica.ts
 import { lerBanco } from '../src/lib/banco';
 import { DIA, data, fmtQtd, juntarProfs, lerDinheiro, lerQtd, nomeDoMes, numero, quando, reais, semRS } from '../src/lib/format';
-import { condicoesDe, linkZap, listaDe, mensagem, mesclarLista, novoRascunho, ordenarItens, qtdUn, resumoItens, subtotal, total } from '../src/lib/orcamento';
+import { condicoesDe, linkZap, listaDe, mensagem, mesclarLista, novoRascunho, ordenarItens, qtdUn, resumoItens, subtotal, total, bancoVazio, novoCadastro, precisaServico, profCanonica, temServico } from '../src/lib/orcamento';
 import { seed } from './exemplos';
 import { htmlDoPdf } from '../src/lib/pdf';
 
@@ -55,6 +55,21 @@ igual('resumo o15', resumoItens(o15), 'Instalação de chuveiro + 1 serviço');
 igual('resumo o13', resumoItens(o13), 'Troca da fiação da sala');
 igual('desconto maior que subtotal não fica negativo', total({ ...o12, desconto: 99999999 }), 0);
 igual('qtdUn com unidade', qtdUn({ tipo: 'servico', nome: 'x', qtd: 12.5, preco: 1, un: 'm²' }), '12,5 m²');
+
+console.log('== Cadastro novo e regras do orçamento');
+const sujo = seed(t0);
+const cad = novoCadastro(sujo, ['Eletricista'], undefined);
+check('cadastro novo não herda orçamento e volta ao nº 1', cad.orcamentos.length === 0 && cad.proxNum === 1);
+igual('cadastro novo já traz os serviços da área', cad.catalogo.length, listaDe('Eletricista').length);
+const vid = novoCadastro(bancoVazio(), ['Vidraceiro'], { prof: 'Vidraceiro', nome: ' Troca de vidro ', preco: 15000 });
+check('profissão nova entra com o serviço cadastrado', vid.catalogo.length === 1 && vid.catalogo[0].nome === 'Troca de vidro' && vid.catalogo[0].cat === 'Vidraceiro');
+check('profissão nova sem serviço pede cadastro', precisaServico([], 'Vidraceiro'));
+check('profissão com lista pronta não pede', !precisaServico([], 'Pintor'));
+check('profissão que já tem serviço não pede', !precisaServico(vid.catalogo, 'Vidraceiro'));
+igual('grafia de profissão conhecida é padronizada', profCanonica('  eletricista '), 'Eletricista');
+const soMaterial = { ...novoRascunho(1), itens: [{ tipo: 'material' as const, nome: 'Cabo', qtd: 1, preco: 100 }] };
+check('orçamento vazio ou só com material não pode ser gerado', !temServico(novoRascunho(1)) && !temServico(soMaterial));
+check('com serviço pode', temServico(sujo.orcamentos[0]));
 
 console.log('== Texto do WhatsApp');
 const msg = mensagem(o15, b.perfil);

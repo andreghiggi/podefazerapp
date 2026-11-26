@@ -1,8 +1,8 @@
 import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import {
+  Keyboard,
   KeyboardAvoidingView,
   Modal,
-  Platform,
   Pressable,
   ScrollView,
   StyleProp,
@@ -82,15 +82,27 @@ export function H2({ style, children }: { style?: StyleProp<TextStyle>; children
 }
 
 // ---------- tela ----------
+function useTecladoAberto(): boolean {
+  const [aberto, setAberto] = useState(false);
+  useEffect(() => {
+    const abriu = Keyboard.addListener('keyboardDidShow', () => setAberto(true));
+    const fechou = Keyboard.addListener('keyboardDidHide', () => setAberto(false));
+    return () => { abriu.remove(); fechou.remove(); };
+  }, []);
+  return aberto;
+}
+
 export function Tela({ children, comBarra, rodape }: { children: React.ReactNode; comBarra?: boolean; rodape?: React.ReactNode }) {
   const c = useCores();
+  // com o teclado aberto a barra de baixo sai, para sobrar espaço aos campos
+  const teclado = useTecladoAberto();
   return (
     <SafeAreaView edges={['top', 'left', 'right']} style={{ flex: 1, backgroundColor: c.reboco }}>
-      <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+      <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
         <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 12, paddingBottom: comBarra ? 170 : 32 }}>
           <View style={{ width: '100%', maxWidth: 480, alignSelf: 'center', gap: 16 }}>{children}</View>
         </ScrollView>
-        {rodape}
+        {teclado ? null : rodape}
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
@@ -382,16 +394,17 @@ export function Passo({ onMenos, onMais, rotuloMenos, rotuloMais, children }: { 
 export function Folha({ aberta, onFechar, children, rodape }: { aberta: boolean; onFechar: () => void; children: React.ReactNode; rodape: React.ReactNode }) {
   const c = useCores();
   const insets = useSafeAreaInsets();
+  const teclado = useTecladoAberto();
   return (
     <Modal visible={aberta} transparent animationType="slide" onRequestClose={onFechar} statusBarTranslucent>
       <View style={{ flex: 1, backgroundColor: c.veu, justifyContent: 'flex-end', alignItems: 'center' }}>
         <Pressable style={StyleSheet.absoluteFill} onPress={onFechar} accessibilityLabel="Fechar" />
-        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={{ width: '100%', maxWidth: 520, maxHeight: '88%' }}>
+        <KeyboardAvoidingView behavior="padding" style={{ width: '100%', maxWidth: 520, maxHeight: '88%' }}>
           <View style={{ backgroundColor: c.reboco, borderTopLeftRadius: RAIO.lg, borderTopRightRadius: RAIO.lg, paddingTop: 10, paddingHorizontal: 16, maxHeight: '100%' }}>
             <View style={{ width: 40, height: 5, borderRadius: 3, backgroundColor: c.linhaForte, opacity: 0.6, alignSelf: 'center', marginBottom: 6 }} />
             <AvisoProvider>
               {children}
-              <View style={{ paddingTop: 12, paddingBottom: 16 + insets.bottom, borderTopWidth: 1, borderTopColor: c.linha, gap: 8 }}>{rodape}</View>
+              {teclado ? null : <View style={{ paddingTop: 12, paddingBottom: 16 + insets.bottom, borderTopWidth: 1, borderTopColor: c.linha, gap: 8 }}>{rodape}</View>}
             </AvisoProvider>
           </View>
         </KeyboardAvoidingView>

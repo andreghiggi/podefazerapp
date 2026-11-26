@@ -1,6 +1,6 @@
 import { LISTAS } from '../data/listas';
 import { Banco, Item, Orcamento, Servico, Status } from '../types';
-import { DIA, data, fmtQtd, juntarProfs, numero, reais, uid } from './format';
+import { DIA, capitalizar, data, fmtQtd, juntarProfs, numero, reais, uid } from './format';
 
 export const ROTULO: Record<Status, string> = { esperando: 'Esperando', aprovado: 'Aprovado', recusado: 'Recusado' };
 
@@ -42,6 +42,46 @@ export function mesclarLista(catalogo: Servico[], prof: string): Servico[] {
   catalogo.forEach((s) => (tem[s.nome.toLowerCase()] = true));
   const novos = listaDe(prof).filter((s) => !tem[s.nome.toLowerCase()]);
   return catalogo.concat(novos);
+}
+
+/** Nome da profissão como o app guarda: se for uma das que têm lista pronta, usa a grafia dela. */
+export function profCanonica(nome: string): string {
+  const n = (nome || '').trim();
+  if (!n) return '';
+  return Object.keys(LISTAS).find((p) => p.toLowerCase() === n.toLowerCase()) ?? capitalizar(n);
+}
+
+/** Profissão sem lista pronta e sem nenhum serviço guardado: precisa cadastrar o primeiro. */
+export function precisaServico(catalogo: Servico[], prof: string): boolean {
+  return !!prof && !LISTAS[prof] && !catalogo.some((s) => s.cat === prof);
+}
+
+export interface PrimeiroServico {
+  prof: string;
+  nome: string;
+  /** centavos */
+  preco: number;
+}
+
+/**
+ * Cadastro novo: começa sempre sem nenhum orçamento, numeração no 1 e a lista de serviços
+ * montada só com as profissões escolhidas (mais o serviço que a pessoa cadastrou na hora).
+ */
+export function novoCadastro(banco: Banco, profs: string[], primeiro?: PrimeiroServico): Banco {
+  let catalogo = profs.reduce((cat, p) => mesclarLista(cat, p), [] as Servico[]);
+  if (primeiro) catalogo = catalogo.concat({ id: uid(), nome: primeiro.nome.trim(), preco: primeiro.preco, un: '', cat: primeiro.prof });
+  return {
+    v: 2,
+    perfil: { ...banco.perfil, profissoes: profs, profissao: juntarProfs(profs), exemplo: false },
+    catalogo,
+    proxNum: 1,
+    orcamentos: [],
+  };
+}
+
+/** Orçamento só pode ser gerado com pelo menos um serviço (material sozinho não vale). */
+export function temServico(o: Orcamento): boolean {
+  return o.itens.some((i) => i.tipo === 'servico');
 }
 
 export function novoRascunho(proxNum: number): Orcamento {
