@@ -27,6 +27,10 @@ export function Perfil({ db, setPerfil, ir, addProf, zerar }: {
         <Entrada accessibilityLabel="Seu nome ou da empresa" value={p.nome} onChangeText={(t) => setPerfil({ nome: t })} />
       </Campo>
 
+      <Campo rotulo="E-mail (opcional)">
+        <Entrada accessibilityLabel="E-mail" value={p.email ?? ''} onChangeText={(t) => setPerfil({ email: t })} keyboardType="email-address" autoCapitalize="none" />
+      </Campo>
+
       <View style={{ flexDirection: 'row', gap: 10 }}>
         <Campo rotulo="Como aparece no orçamento" style={{ flex: 1 }}>
           <Entrada accessibilityLabel="Como aparece no orçamento" value={p.profissao} onChangeText={(t) => setPerfil({ profissao: t })} />

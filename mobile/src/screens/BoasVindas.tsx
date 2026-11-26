@@ -1,7 +1,8 @@
 import React from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { Icone, Simbolo } from '../components/Icone';
-import { BarraFixa, Botao, Campo, Entrada, H1, Nota, Tela, Topo, Txt, useCores } from '../components/ui';
+import { BarraFixa, Botao, Campo, Entrada, H1, Nota, Tela, Topo, Txt, useAviso, useCores } from '../components/ui';
+import { entrarComGoogle, googleDisponivel } from '../lib/google';
 import { PROFS } from '../data/listas';
 import { FONTE, RAIO } from '../theme';
 import { Perfil } from '../types';
@@ -42,6 +43,23 @@ export function BoasVindas({ perfil, escolha, outra, setEscolha, setOutra, setPe
   comecar: () => void;
 }) {
   const c = useCores();
+  const aviso = useAviso();
+  const [entrando, setEntrando] = React.useState(false);
+  const google = async () => {
+    setEntrando(true);
+    try {
+      const conta = await entrarComGoogle();
+      if (conta) {
+        // não apaga um nome que a pessoa já digitou (pode ser o nome da empresa)
+        setPerfil({ email: conta.email, ...(perfil.nome.trim() ? {} : { nome: conta.nome }) });
+        aviso('Conta ligada. Confira os dados e complete o telefone.');
+      }
+    } catch (e) {
+      aviso(e instanceof Error ? e.message : 'Não foi possível entrar com o Google.');
+    } finally {
+      setEntrando(false);
+    }
+  };
   return (
     <Tela comBarra rodape={<BarraFixa><Botao largura onPress={comecar}>Começar</Botao></BarraFixa>}>
       <Topo>
@@ -54,6 +72,10 @@ export function BoasVindas({ perfil, escolha, outra, setEscolha, setOutra, setPe
         <H1>Crie seu perfil</H1>
         <Txt suave>Esses dados aparecem no topo dos seus orçamentos e ficam guardados só neste celular.</Txt>
       </View>
+      {googleDisponivel ? (
+        <Botao variante="contorno" largura onPress={google} desativado={entrando}>{entrando ? 'Abrindo o Google…' : 'Entrar com Google'}</Botao>
+      ) : null}
+      {perfil.email ? <Txt peq suave>{'Conta: ' + perfil.email}</Txt> : null}
       <View style={{ flexDirection: 'row', gap: 10 }}>
         <Campo rotulo="Seu nome ou da empresa" style={{ flex: 1 }}>
           <Entrada accessibilityLabel="Seu nome ou da empresa" value={perfil.nome} onChangeText={(t) => setPerfil({ nome: t })} />

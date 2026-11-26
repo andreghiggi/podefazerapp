@@ -37,6 +37,8 @@ export interface Orcamento {
 
 export interface Perfil {
   nome: string;
+  /** preenchido pelo "Entrar com Google" ou à mão (opcional) */
+  email?: string;
   profissao: string;
   profissoes: string[];
   telefone: string;

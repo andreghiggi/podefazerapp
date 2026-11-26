@@ -12,7 +12,7 @@ Versão de verdade do protótipo `../app/index.html`, com o mesmo visual e as me
 - Enviar no WhatsApp (abre a conversa com o texto pronto) e compartilhar PDF (A4, gerado no aparelho).
 - Meus serviços (editar nome e preço, tirar, adicionar) e Perfil (dados, profissões, condições padrão, apagar tudo).
 - Tema claro e escuro automático, tokens da marca em `src/theme.ts` (de `../marca/tokens.json`).
-- Dados só no aparelho (AsyncStorage). Sem servidor, funciona offline. O app começa vazio: o perfil é criado no primeiro uso e só os serviços sugeridos da profissão entram na lista.
+- Dados só no aparelho (AsyncStorage). Sem servidor, funciona offline. O app começa vazio: o perfil é criado no primeiro uso (com a opção "Entrar com Google", que só preenche nome e e-mail; ver `src/lib/google.ts`) e só os serviços sugeridos da profissão entram na lista. Os IDs OAuth Android ficam no Google Cloud, projeto `podefazer`.
 
 ## Rodar
 
