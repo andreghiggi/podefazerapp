@@ -48,7 +48,7 @@ export function AvisoProvider({ children }: { children: React.ReactNode }) {
       {msg ? (
         <View pointerEvents="none" style={[st.avisoRaiz, { top: 12 + insets.top }]} accessibilityLiveRegion="polite">
           <View style={{ backgroundColor: c.ink, paddingVertical: 12, paddingHorizontal: 18, borderRadius: RAIO.md, maxWidth: 440 }}>
-            <Text style={{ color: c.reboco, fontFamily: FONTE.sans600, fontSize: 15, textAlign: 'center' }}>{msg}</Text>
+            <Text style={{ color: c.reboco, fontFamily: FONTE.sans600, fontSize: 14, textAlign: 'center' }}>{msg}</Text>
           </View>
         </View>
       ) : null}
@@ -63,7 +63,7 @@ export function Txt({ style, suave, peq, forte, num, children, ...rest }: React.
     <Text
       {...rest}
       style={[
-        { fontFamily: forte ? FONTE.sans600 : FONTE.sans400, fontSize: peq ? 13 : 16, lineHeight: peq ? 18 : 23, color: suave ? c.inkSuave : c.ink },
+        { fontFamily: forte ? FONTE.sans600 : FONTE.sans400, fontSize: peq ? 12 : 15, lineHeight: peq ? 17 : 20, color: suave ? c.inkSuave : c.ink },
         num && { fontVariant: ['tabular-nums'] },
         style,
       ]}
@@ -74,11 +74,11 @@ export function Txt({ style, suave, peq, forte, num, children, ...rest }: React.
 }
 export function H1({ style, children }: { style?: StyleProp<TextStyle>; children: React.ReactNode }) {
   const c = useCores();
-  return <Text accessibilityRole="header" style={[{ fontFamily: FONTE.display800, fontSize: 28, lineHeight: 32, color: c.ink }, style]}>{children}</Text>;
+  return <Text accessibilityRole="header" style={[{ fontFamily: FONTE.display800, fontSize: 24, lineHeight: 28, color: c.ink }, style]}>{children}</Text>;
 }
 export function H2({ style, children }: { style?: StyleProp<TextStyle>; children: React.ReactNode }) {
   const c = useCores();
-  return <Text accessibilityRole="header" style={[{ fontFamily: FONTE.display700, fontSize: 19, lineHeight: 24, color: c.ink }, style]}>{children}</Text>;
+  return <Text accessibilityRole="header" style={[{ fontFamily: FONTE.display700, fontSize: 17, lineHeight: 22, color: c.ink }, style]}>{children}</Text>;
 }
 
 // ---------- tela ----------
@@ -87,8 +87,8 @@ export function Tela({ children, comBarra, rodape }: { children: React.ReactNode
   return (
     <SafeAreaView edges={['top', 'left', 'right']} style={{ flex: 1, backgroundColor: c.reboco }}>
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-        <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 12, paddingBottom: comBarra ? 190 : 40 }}>
-          <View style={{ width: '100%', maxWidth: 480, alignSelf: 'center', gap: 20 }}>{children}</View>
+        <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 12, paddingBottom: comBarra ? 170 : 32 }}>
+          <View style={{ width: '100%', maxWidth: 480, alignSelf: 'center', gap: 16 }}>{children}</View>
         </ScrollView>
         {rodape}
       </KeyboardAvoidingView>
@@ -97,7 +97,7 @@ export function Tela({ children, comBarra, rodape }: { children: React.ReactNode
 }
 
 export function Topo({ children }: { children: React.ReactNode }) {
-  return <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8, minHeight: 48 }}>{children}</View>;
+  return <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8, minHeight: 44 }}>{children}</View>;
 }
 
 /** Barra fixa embaixo: total, botões ou navegação. */
@@ -116,7 +116,7 @@ export function NavInferior({ atual, ir }: { atual: 'inicio' | 'servicos' | 'per
   const b = (t: 'inicio' | 'servicos' | 'perfil', icone: NomeIcone, nome: string) => {
     const ativo = atual === t;
     return (
-      <Pressable key={t} onPress={() => ir(t)} accessibilityRole="button" accessibilityState={{ selected: ativo }} style={{ flex: 1, minHeight: 52, alignItems: 'center', justifyContent: 'center', gap: 2 }}>
+      <Pressable key={t} onPress={() => ir(t)} accessibilityRole="button" accessibilityState={{ selected: ativo }} style={{ flex: 1, minHeight: 46, alignItems: 'center', justifyContent: 'center', gap: 2 }}>
         <Icone nome={icone} color={ativo ? c.ink : c.inkSuave} />
         <Text style={{ fontFamily: ativo ? FONTE.sans700 : FONTE.sans500, fontSize: 12, color: ativo ? c.ink : c.inkSuave }}>{nome}</Text>
       </Pressable>
@@ -147,11 +147,11 @@ export function Botao({ children, onPress, variante = 'principal', grande, icone
 }) {
   const c = useCores();
   const v: Record<Variante, { bg: string; fg: string; borda: string; fonte: string; tam: number; tracejado?: boolean }> = {
-    principal: { bg: c.amareloFita, fg: c.asfalto, borda: 'transparent', fonte: FONTE.display800, tam: grande ? 20 : 19 },
-    verde: { bg: c.verde, fg: c.onVerde, borda: 'transparent', fonte: FONTE.display800, tam: 18 },
-    contorno: { bg: 'transparent', fg: c.ink, borda: c.ink, fonte: FONTE.sans600, tam: 16 },
-    perigo: { bg: 'transparent', fg: c.vermelho, borda: c.vermelho, fonte: FONTE.sans600, tam: 16 },
-    tracejado: { bg: 'transparent', fg: c.ink, borda: c.linhaForte, fonte: FONTE.sans600, tam: 16, tracejado: true },
+    principal: { bg: c.amareloFita, fg: c.asfalto, borda: 'transparent', fonte: FONTE.display800, tam: grande ? 18 : 17 },
+    verde: { bg: c.verde, fg: c.onVerde, borda: 'transparent', fonte: FONTE.display800, tam: 16 },
+    contorno: { bg: 'transparent', fg: c.ink, borda: c.ink, fonte: FONTE.sans600, tam: 15 },
+    perigo: { bg: 'transparent', fg: c.vermelho, borda: c.vermelho, fonte: FONTE.sans600, tam: 15 },
+    tracejado: { bg: 'transparent', fg: c.ink, borda: c.linhaForte, fonte: FONTE.sans600, tam: 15, tracejado: true },
   };
   const e = v[variante];
   return (
@@ -161,7 +161,7 @@ export function Botao({ children, onPress, variante = 'principal', grande, icone
       accessibilityRole="button"
       style={({ pressed }) => [
         {
-          minHeight: variante === 'tracejado' ? 48 : grande ? 64 : ALVO,
+          minHeight: variante === 'tracejado' ? 44 : grande ? 56 : ALVO,
           borderRadius: RAIO.md,
           borderWidth: 1.5,
           borderStyle: e.tracejado ? 'dashed' : 'solid',
@@ -188,7 +188,7 @@ export function BotaoTexto({ children, onPress, style }: { children: React.React
   const c = useCores();
   return (
     <Pressable onPress={onPress} accessibilityRole="button" style={[{ minHeight: 36, paddingVertical: 4, justifyContent: 'center', alignSelf: 'flex-start' }, style]}>
-      <Text style={{ color: c.ink, fontFamily: FONTE.sans600, fontSize: 13, textDecorationLine: 'underline' }}>{children}</Text>
+      <Text style={{ color: c.ink, fontFamily: FONTE.sans600, fontSize: 12, textDecorationLine: 'underline' }}>{children}</Text>
     </Pressable>
   );
 }
@@ -219,7 +219,7 @@ export function Chip({ children, ativo, onPress, destaque }: { children: React.R
     backgroundColor: ativo ? c.ink : destaque ? c.amareloClaro : c.superficie,
     borderColor: ativo ? c.ink : destaque ? c.amareloFita : c.linha,
   };
-  const texto = <Text style={{ fontFamily: ativo || destaque ? FONTE.sans600 : FONTE.sans500, fontSize: 14, color: ativo ? c.reboco : c.ink }}>{children}</Text>;
+  const texto = <Text style={{ fontFamily: ativo || destaque ? FONTE.sans600 : FONTE.sans500, fontSize: 13, color: ativo ? c.reboco : c.ink }}>{children}</Text>;
   if (!onPress) return <View style={estilo}>{texto}</View>;
   return (
     <Pressable onPress={onPress} accessibilityRole="button" accessibilityState={{ selected: !!ativo }} style={estilo}>
@@ -251,7 +251,7 @@ export function Nota({ children }: { children: React.ReactNode }) {
   const c = useCores();
   return (
     <View style={{ backgroundColor: c.superficie, borderWidth: 1, borderStyle: 'dashed', borderColor: c.linhaForte, borderRadius: RAIO.md, paddingVertical: 10, paddingHorizontal: 12 }}>
-      <Text style={{ fontFamily: FONTE.sans400, fontSize: 13, lineHeight: 18, color: c.inkSuave }}>{children}</Text>
+      <Text style={{ fontFamily: FONTE.sans400, fontSize: 12, lineHeight: 17, color: c.inkSuave }}>{children}</Text>
     </View>
   );
 }
@@ -259,7 +259,7 @@ export function Nota({ children }: { children: React.ReactNode }) {
 // ---------- campos ----------
 export function useEstiloEntrada(): TextStyle {
   const c = useCores();
-  return { minHeight: ALVO, paddingHorizontal: 14, borderWidth: 1, borderColor: c.linhaForte, borderRadius: RAIO.sm, backgroundColor: c.superficie, fontSize: 16, fontFamily: FONTE.sans400, color: c.ink };
+  return { minHeight: ALVO, paddingHorizontal: 14, borderWidth: 1, borderColor: c.linhaForte, borderRadius: RAIO.sm, backgroundColor: c.superficie, fontSize: 15, fontFamily: FONTE.sans400, color: c.ink };
 }
 
 export function Entrada({ style, ...rest }: TextInputProps) {
@@ -272,7 +272,7 @@ export function Entrada({ style, ...rest }: TextInputProps) {
       {...rest}
       onFocus={(e) => { setFoco(true); rest.onFocus?.(e); }}
       onBlur={(e) => { setFoco(false); rest.onBlur?.(e); }}
-      style={[base, rest.multiline && { minHeight: 96, paddingTop: 12, paddingBottom: 12, textAlignVertical: 'top', lineHeight: 22 }, foco && { borderColor: c.amareloFita, borderWidth: 2 }, style]}
+      style={[base, rest.multiline && { minHeight: 84, paddingTop: 12, paddingBottom: 12, textAlignVertical: 'top', lineHeight: 20 }, foco && { borderColor: c.amareloFita, borderWidth: 2 }, style]}
     />
   );
 }
@@ -281,7 +281,7 @@ export function Campo({ rotulo, children, style }: { rotulo: string; children: R
   const c = useCores();
   return (
     <View style={[{ gap: 6 }, style]}>
-      <Text style={{ fontFamily: FONTE.sans600, fontSize: 13, color: c.inkSuave }}>{rotulo}</Text>
+      <Text style={{ fontFamily: FONTE.sans600, fontSize: 12, color: c.inkSuave }}>{rotulo}</Text>
       {children}
     </View>
   );
@@ -336,7 +336,7 @@ export function EntradaQtd({ qtd, onChange, rotulo }: { qtd: number; onChange: (
       onFocus={() => { foco.current = true; }}
       onChangeText={(t) => { setTxt(t); onChange(lerQtd(t)); }}
       onBlur={() => { foco.current = false; setTxt(fmtQtd(lerQtd(txt))); }}
-      style={{ width: 52, height: 40, textAlign: 'center', fontFamily: FONTE.sans700, fontSize: 15, color: c.ink, borderWidth: 1, borderColor: c.linhaForte, borderRadius: RAIO.sm, backgroundColor: c.superficie, paddingHorizontal: 4, fontVariant: ['tabular-nums'] }}
+      style={{ width: 52, height: 40, textAlign: 'center', fontFamily: FONTE.sans700, fontSize: 14, color: c.ink, borderWidth: 1, borderColor: c.linhaForte, borderRadius: RAIO.sm, backgroundColor: c.superficie, paddingHorizontal: 4, fontVariant: ['tabular-nums'] }}
     />
   );
 }
@@ -368,11 +368,11 @@ export function Passo({ onMenos, onMais, rotuloMenos, rotuloMais, children }: { 
   return (
     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
       <Pressable onPress={onMenos} accessibilityRole="button" accessibilityLabel={rotuloMenos} style={[base, { borderColor: c.linhaForte, backgroundColor: c.superficie }]}>
-        <Text style={{ fontSize: 22, lineHeight: 24, color: c.ink }}>−</Text>
+        <Text style={{ fontSize: 20, lineHeight: 22, color: c.ink }}>−</Text>
       </Pressable>
       {children}
       <Pressable onPress={onMais} accessibilityRole="button" accessibilityLabel={rotuloMais} style={[base, { borderColor: c.amareloFita, backgroundColor: c.amareloFita }]}>
-        <Text style={{ fontSize: 22, lineHeight: 24, color: c.asfalto }}>+</Text>
+        <Text style={{ fontSize: 20, lineHeight: 22, color: c.asfalto }}>+</Text>
       </Pressable>
     </View>
   );

@@ -45,9 +45,9 @@ export function Servicos({ db, mudar, ir }: { db: Banco; mudar: (fn: (b: Banco) 
             <View key={s.id}>
               {cab}
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: c.linha }}>
-                <Entrada value={s.nome} onChangeText={(t) => editar(s.id, { nome: t })} accessibilityLabel="Nome do serviço" style={{ flex: 1, minHeight: 46, paddingHorizontal: 10, fontSize: 15 }} />
+                <Entrada value={s.nome} onChangeText={(t) => editar(s.id, { nome: t })} accessibilityLabel="Nome do serviço" style={{ flex: 1, minHeight: 42, paddingHorizontal: 10, fontSize: 14 }} />
                 <View style={{ width: 104 }}>
-                  <EntradaDinheiro centavos={s.preco} rotulo={'Preço de ' + s.nome} onChange={(p) => editar(s.id, { preco: p })} style={{ minHeight: 46, paddingHorizontal: 10, fontSize: 15 }} />
+                  <EntradaDinheiro centavos={s.preco} rotulo={'Preço de ' + s.nome} onChange={(p) => editar(s.id, { preco: p })} style={{ minHeight: 42, paddingHorizontal: 10, fontSize: 14 }} />
                 </View>
                 <BotaoIcone icone="lixo" size={20} rotulo={'Tirar ' + s.nome + ' da lista'} onPress={() => mudar((b) => ({ ...b, catalogo: b.catalogo.filter((x) => x.id !== s.id) }))} />
               </View>
@@ -55,8 +55,8 @@ export function Servicos({ db, mudar, ir }: { db: Banco; mudar: (fn: (b: Banco) 
           );
         })}
         <View style={{ flexDirection: 'row', gap: 8, paddingTop: 12 }}>
-          <Entrada value={nome} onChangeText={setNome} placeholder="Serviço novo" accessibilityLabel="Nome do serviço novo" style={{ flex: 1, minHeight: 46, paddingHorizontal: 10, fontSize: 15 }} />
-          <Entrada value={preco} onChangeText={setPreco} keyboardType="decimal-pad" placeholder="R$ 0,00" accessibilityLabel="Preço do serviço novo" style={{ width: 104, minHeight: 46, paddingHorizontal: 10, fontSize: 15 }} />
+          <Entrada value={nome} onChangeText={setNome} placeholder="Serviço novo" accessibilityLabel="Nome do serviço novo" style={{ flex: 1, minHeight: 42, paddingHorizontal: 10, fontSize: 14 }} />
+          <Entrada value={preco} onChangeText={setPreco} keyboardType="decimal-pad" placeholder="R$ 0,00" accessibilityLabel="Preço do serviço novo" style={{ width: 104, minHeight: 42, paddingHorizontal: 10, fontSize: 14 }} />
         </View>
         <Botao variante="tracejado" icone="mais" largura style={{ marginTop: 8 }} onPress={adicionar}>Adicionar à lista</Botao>
       </Cartao>

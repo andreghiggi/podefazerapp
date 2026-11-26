@@ -20,7 +20,7 @@ function Papel({ o, p }: { o: Orcamento; p: Perfil }) {
   const serv = o.itens.filter((i) => i.tipo === 'servico');
   const mat = o.itens.filter((i) => i.tipo === 'material');
   const cond = condicoesDe(o, p.condicoes);
-  const t = (extra?: object) => ({ fontFamily: FONTE.sans400, fontSize: 13, lineHeight: 18, color: TINTA, ...extra });
+  const t = (extra?: object) => ({ fontFamily: FONTE.sans400, fontSize: 12, lineHeight: 17, color: TINTA, ...extra });
   const rotulo = { fontFamily: FONTE.sans700, fontSize: 10, letterSpacing: 0.8, color: CINZA, textTransform: 'uppercase' as const };
 
   const linhas = (arr: Item[]) =>
@@ -38,12 +38,12 @@ function Papel({ o, p }: { o: Orcamento; p: Perfil }) {
     <View accessible accessibilityLabel="Orçamento como o cliente recebe" style={{ backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: LINHA, borderRadius: 4, padding: 16 }}>
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', gap: 12, paddingBottom: 12, borderBottomWidth: 2, borderBottomColor: TINTA, flexWrap: 'wrap' }}>
         <View style={{ flexShrink: 1 }}>
-          <Text style={{ fontFamily: FONTE.display800, fontSize: 17, lineHeight: 22, color: TINTA }}>{p.nome || 'Seu nome'}</Text>
+          <Text style={{ fontFamily: FONTE.display800, fontSize: 16, lineHeight: 20, color: TINTA }}>{p.nome || 'Seu nome'}</Text>
           <Text style={t({ color: CINZA })}>{p.profissao}</Text>
           <Text style={t({ color: CINZA })}>{p.telefone}</Text>
         </View>
         <View style={{ alignItems: 'flex-end' }}>
-          <Text style={{ fontFamily: FONTE.display800, fontSize: 17, letterSpacing: 0.5, color: TINTA }}>ORÇAMENTO</Text>
+          <Text style={{ fontFamily: FONTE.display800, fontSize: 16, letterSpacing: 0.5, color: TINTA }}>ORÇAMENTO</Text>
           <Text style={t({ fontFamily: FONTE.sans700 })}>{'Nº ' + numero(o.num)}</Text>
           <Text style={t({ color: CINZA })}>{'Emitido em ' + data(o.criadoEm)}</Text>
           <Text style={t({ color: CINZA })}>{'Válido até ' + data(o.criadoEm + o.validade * DIA)}</Text>
@@ -52,7 +52,7 @@ function Papel({ o, p }: { o: Orcamento; p: Perfil }) {
 
       <View style={{ paddingTop: 12, paddingBottom: 4 }}>
         <Text style={rotulo}>Cliente</Text>
-        <Text style={t({ fontFamily: FONTE.sans600, fontSize: 14 })}>{o.cliente || '—'}</Text>
+        <Text style={t({ fontFamily: FONTE.sans600, fontSize: 13 })}>{o.cliente || '—'}</Text>
         {o.tel ? <Text style={t({ color: CINZA })}>{o.tel}</Text> : null}
       </View>
 
@@ -79,7 +79,7 @@ function Papel({ o, p }: { o: Orcamento; p: Perfil }) {
         ) : null}
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#FFF1C7', borderRadius: RAIO.sm, padding: 8, marginTop: 4 }}>
           <Text style={t({ fontFamily: FONTE.sans700 })}>TOTAL</Text>
-          <Text style={{ fontFamily: FONTE.display800, fontSize: 19, color: TINTA, fontVariant: ['tabular-nums'] }}>{reais(total(o))}</Text>
+          <Text style={{ fontFamily: FONTE.display800, fontSize: 17, color: TINTA, fontVariant: ['tabular-nums'] }}>{reais(total(o))}</Text>
         </View>
       </View>
 
@@ -156,7 +156,7 @@ export function Detalhe({ o, perfil, recemFeito, voltar, mudarStatus, duplicar, 
         </BarraFixa>
       }
     >
-      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', minHeight: 48 }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', minHeight: 44 }}>
         <BotaoIcone icone={recemFeito ? 'fechar' : 'voltar'} rotulo="Voltar ao início" onPress={voltar} />
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <Txt peq suave num>{'Nº ' + numero(o.num)}</Txt>
@@ -191,7 +191,7 @@ export function Detalhe({ o, perfil, recemFeito, voltar, mudarStatus, duplicar, 
                 accessibilityState={{ selected: ativo }}
                 style={{ flex: 1, minHeight: 44, alignItems: 'center', justifyContent: 'center', borderRadius: RAIO.sm, borderWidth: ativo ? 1.5 : 1, backgroundColor: ativo ? cor[0] : c.superficie, borderColor: ativo ? cor[1] : c.linha }}
               >
-                <Text style={{ fontFamily: FONTE.sans600, fontSize: 14, color: ativo ? c.ink : c.inkSuave }}>{ROTULO[s]}</Text>
+                <Text style={{ fontFamily: FONTE.sans600, fontSize: 13, color: ativo ? c.ink : c.inkSuave }}>{ROTULO[s]}</Text>
               </Pressable>
             );
           })}

@@ -10,9 +10,9 @@ Versão de verdade do protótipo `../app/index.html`, com o mesmo visual e as me
 - Dica "usar este preço sempre" quando o preço do orçamento difere do da lista.
 - Detalhe: situação (esperando, aprovado, recusado), papel do orçamento, duplicar, editar, copiar texto, excluir.
 - Enviar no WhatsApp (abre a conversa com o texto pronto) e compartilhar PDF (A4, gerado no aparelho).
-- Meus serviços (editar nome e preço, tirar, adicionar) e Perfil (dados, profissões, condições padrão, apagar exemplos/tudo).
+- Meus serviços (editar nome e preço, tirar, adicionar) e Perfil (dados, profissões, condições padrão, apagar tudo).
 - Tema claro e escuro automático, tokens da marca em `src/theme.ts` (de `../marca/tokens.json`).
-- Dados só no aparelho (AsyncStorage). Sem servidor, funciona offline.
+- Dados só no aparelho (AsyncStorage). Sem servidor, funciona offline. O app começa vazio: o perfil é criado no primeiro uso e só os serviços sugeridos da profissão entram na lista.
 
 ## Rodar
 

@@ -62,7 +62,7 @@ export const ESCURO: Cores = {
 };
 
 export const RAIO = { sm: 6, md: 12, lg: 20 };
-export const ALVO = 52;
+export const ALVO = 46;
 
 export const FONTE = {
   display700: 'Archivo_700Bold',

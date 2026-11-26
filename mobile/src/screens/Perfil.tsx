@@ -5,17 +5,15 @@ import { PROFS } from '../data/listas';
 import { Banco, Perfil as PerfilT } from '../types';
 import { TelaId } from './Inicio';
 
-export function Perfil({ db, setPerfil, ir, addProf, limparExemplos, zerar }: {
+export function Perfil({ db, setPerfil, ir, addProf, zerar }: {
   db: Banco;
   setPerfil: (p: Partial<PerfilT>) => void;
   ir: (t: TelaId) => void;
   addProf: (nome: string) => boolean;
-  limparExemplos: () => void;
   zerar: () => void;
 }) {
   const p = db.perfil;
   const [nova, setNova] = useState('');
-  const temExemplo = db.orcamentos.some((o) => o.exemplo);
   const faltam = PROFS.filter((x) => p.profissoes.indexOf(x) < 0);
 
   return (
@@ -52,7 +50,7 @@ export function Perfil({ db, setPerfil, ir, addProf, limparExemplos, zerar }: {
           </>
         ) : null}
         <View style={{ gap: 8, paddingTop: 4 }}>
-          <Entrada value={nova} onChangeText={setNova} placeholder="Outra profissão" accessibilityLabel="Outra profissão" style={{ minHeight: 46, paddingHorizontal: 10, fontSize: 15 }} />
+          <Entrada value={nova} onChangeText={setNova} placeholder="Outra profissão" accessibilityLabel="Outra profissão" style={{ minHeight: 42, paddingHorizontal: 10, fontSize: 14 }} />
           <Botao variante="tracejado" icone="mais" largura onPress={() => { if (addProf(nova)) setNova(''); }}>Adicionar profissão</Botao>
         </View>
       </Cartao>
@@ -63,7 +61,6 @@ export function Perfil({ db, setPerfil, ir, addProf, limparExemplos, zerar }: {
 
       <Nota>Tudo fica guardado só neste aparelho. Esta versão ainda não tem backup na nuvem: se trocar de celular, os orçamentos não vão junto.</Nota>
 
-      {temExemplo ? <Botao largura onPress={limparExemplos}>Apagar exemplos e começar</Botao> : null}
       <Botao variante="perigo" largura onPress={zerar}>Apagar tudo</Botao>
     </Tela>
   );

@@ -61,8 +61,8 @@ export function Editor({ db, mudar, rascunho, setRascunho, editando, cancelar, g
           </Passo>
           {it.un ? <Txt peq suave>{it.un}</Txt> : null}
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, flex: 1, minWidth: 120 }}>
-            <Txt suave style={{ fontSize: 14 }}>× R$</Txt>
-            <EntradaDinheiro centavos={it.preco} rotulo={'Preço de ' + it.nome} onChange={(p) => setItem(i, { preco: p })} style={{ minHeight: 40, flex: 1, maxWidth: 110, paddingHorizontal: 10, fontSize: 15 }} />
+            <Txt suave style={{ fontSize: 13 }}>× R$</Txt>
+            <EntradaDinheiro centavos={it.preco} rotulo={'Preço de ' + it.nome} onChange={(p) => setItem(i, { preco: p })} style={{ minHeight: 40, flex: 1, maxWidth: 110, paddingHorizontal: 10, fontSize: 14 }} />
           </View>
           <Txt forte num style={{ marginLeft: 'auto' }}>{reais(it.qtd * it.preco)}</Txt>
         </View>
@@ -99,7 +99,7 @@ export function Editor({ db, mudar, rascunho, setRascunho, editando, cancelar, g
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
           <BotaoIcone icone="voltar" rotulo="Voltar" onPress={cancelar} />
           <View style={{ flex: 1 }}>
-            <H1 style={{ fontSize: 22, lineHeight: 26 }}>{editando ? 'Editar orçamento' : 'Novo orçamento'}</H1>
+            <H1 style={{ fontSize: 20, lineHeight: 26 }}>{editando ? 'Editar orçamento' : 'Novo orçamento'}</H1>
             <Txt peq suave>{'Nº ' + numero(r.num) + ' · ' + data(r.criadoEm)}</Txt>
           </View>
         </View>
@@ -115,17 +115,17 @@ export function Editor({ db, mudar, rascunho, setRascunho, editando, cancelar, g
 
         <Cartao style={{ paddingTop: 4, paddingBottom: 12 }}>
           <H2 style={{ paddingTop: 10, paddingBottom: 6 }}>Serviços</H2>
-          {serv.length ? serv.map(linhaItem) : <Txt suave style={{ fontSize: 14, paddingTop: 14, paddingBottom: 6 }}>Escolha os serviços da sua lista. O preço já vem preenchido.</Txt>}
+          {serv.length ? serv.map(linhaItem) : <Txt suave style={{ fontSize: 13, paddingTop: 14, paddingBottom: 6 }}>Escolha os serviços da sua lista. O preço já vem preenchido.</Txt>}
           <Botao variante="tracejado" icone="mais" largura style={{ marginTop: 12 }} onPress={() => setFolha(true)}>Adicionar serviço</Botao>
         </Cartao>
 
         <Cartao style={{ paddingTop: 4, paddingBottom: 12 }}>
           <H2 style={{ paddingTop: 10, paddingBottom: 6 }}>Materiais</H2>
-          {mat.length ? mat.map(linhaItem) : <Txt suave style={{ fontSize: 14, paddingTop: 14, paddingBottom: 6 }}>Opcional. Coloque o material se for você que vai comprar.</Txt>}
+          {mat.length ? mat.map(linhaItem) : <Txt suave style={{ fontSize: 13, paddingTop: 14, paddingBottom: 6 }}>Opcional. Coloque o material se for você que vai comprar.</Txt>}
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, paddingTop: 12 }}>
-            <Entrada value={matNome} onChangeText={setMatNome} placeholder="Material" accessibilityLabel="Nome do material" onSubmitEditing={addMaterial} style={{ flex: 1, minWidth: 140, minHeight: 46, paddingHorizontal: 10, fontSize: 15 }} />
-            <Entrada value={matQtd} onChangeText={setMatQtd} keyboardType="number-pad" accessibilityLabel="Quantidade" style={{ width: 64, minHeight: 46, paddingHorizontal: 10, fontSize: 15 }} />
-            <Entrada value={matPreco} onChangeText={setMatPreco} keyboardType="decimal-pad" placeholder="R$ 0,00" accessibilityLabel="Preço unitário" onSubmitEditing={addMaterial} style={{ width: 96, minHeight: 46, paddingHorizontal: 10, fontSize: 15 }} />
+            <Entrada value={matNome} onChangeText={setMatNome} placeholder="Material" accessibilityLabel="Nome do material" onSubmitEditing={addMaterial} style={{ flex: 1, minWidth: 140, minHeight: 42, paddingHorizontal: 10, fontSize: 14 }} />
+            <Entrada value={matQtd} onChangeText={setMatQtd} keyboardType="number-pad" accessibilityLabel="Quantidade" style={{ width: 64, minHeight: 42, paddingHorizontal: 10, fontSize: 14 }} />
+            <Entrada value={matPreco} onChangeText={setMatPreco} keyboardType="decimal-pad" placeholder="R$ 0,00" accessibilityLabel="Preço unitário" onSubmitEditing={addMaterial} style={{ width: 96, minHeight: 42, paddingHorizontal: 10, fontSize: 14 }} />
           </View>
           <Botao variante="tracejado" icone="mais" largura style={{ marginTop: 8 }} onPress={addMaterial}>Adicionar material</Botao>
         </Cartao>
@@ -200,14 +200,14 @@ function FolhaCatalogo({ aberta, fechar, db, mudar, rascunho: r, setRascunho, no
       onFechar={fechar}
       rodape={<Botao largura onPress={fechar}>{'Pronto' + (noOrc ? ' · ' + noOrc + (noOrc === 1 ? ' serviço' : ' serviços') : '')}</Botao>}
     >
-      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', minHeight: 48 }}>
-        <Text accessibilityRole="header" style={{ fontFamily: FONTE.display800, fontSize: 22, color: c.ink }}>Adicionar serviço</Text>
+      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', minHeight: 44 }}>
+        <Text accessibilityRole="header" style={{ fontFamily: FONTE.display800, fontSize: 20, color: c.ink }}>Adicionar serviço</Text>
         <BotaoIcone icone="fechar" rotulo="Fechar" onPress={fechar} />
       </View>
       <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={{ gap: 8, paddingTop: 4, paddingBottom: 12 }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, minHeight: 52, paddingHorizontal: 14, borderWidth: 1, borderColor: c.linhaForte, borderRadius: RAIO.sm, backgroundColor: c.superficie }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, minHeight: 46, paddingHorizontal: 14, borderWidth: 1, borderColor: c.linhaForte, borderRadius: RAIO.sm, backgroundColor: c.superficie }}>
           <Icone nome="busca" size={20} color={c.inkSuave} />
-          <Entrada value={busca} onChangeText={setBusca} placeholder="Buscar: tomada, chuveiro…" accessibilityLabel="Buscar serviço" style={{ flex: 1, borderWidth: 0, minHeight: 48, paddingHorizontal: 0, backgroundColor: 'transparent' }} />
+          <Entrada value={busca} onChangeText={setBusca} placeholder="Buscar: tomada, chuveiro…" accessibilityLabel="Buscar serviço" style={{ flex: 1, borderWidth: 0, minHeight: 44, paddingHorizontal: 0, backgroundColor: 'transparent' }} />
         </View>
 
         {cats.length > 2 ? (
@@ -231,21 +231,21 @@ function FolhaCatalogo({ aberta, fechar, db, mudar, rascunho: r, setRascunho, no
                   </Passo>
                 ) : (
                   <Pressable onPress={() => catQtd(s.id, 1)} accessibilityRole="button" accessibilityLabel={'Adicionar ' + s.nome} style={{ width: 38, height: 40, borderRadius: 10, borderWidth: 1, borderColor: c.amareloFita, backgroundColor: c.amareloFita, alignItems: 'center', justifyContent: 'center' }}>
-                    <Text style={{ fontSize: 22, lineHeight: 24, color: c.asfalto }}>+</Text>
+                    <Text style={{ fontSize: 20, lineHeight: 22, color: c.asfalto }}>+</Text>
                   </Pressable>
                 )}
               </View>
             );
           })
         ) : (
-          <Txt suave style={{ fontSize: 14, paddingTop: 14, paddingBottom: 6 }}>Nada com esse nome. Crie aqui embaixo.</Txt>
+          <Txt suave style={{ fontSize: 13, paddingTop: 14, paddingBottom: 6 }}>Nada com esse nome. Crie aqui embaixo.</Txt>
         )}
 
         <View style={{ gap: 4, paddingTop: 8, marginTop: 4, borderTopWidth: 1, borderTopColor: c.linhaForte, borderStyle: 'dashed' }}>
           <Txt forte style={{ paddingTop: 6 }}>Não achou? Crie aqui</Txt>
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, paddingTop: 6 }}>
-            <Entrada value={csNome || busca} onChangeText={setCsNome} placeholder="Nome do serviço" accessibilityLabel="Nome do serviço novo" style={{ flex: 1, minWidth: 150, minHeight: 46, paddingHorizontal: 10, fontSize: 15 }} />
-            <Entrada value={csPreco} onChangeText={setCsPreco} keyboardType="decimal-pad" placeholder="R$ 0,00" accessibilityLabel="Preço do serviço novo" style={{ width: 104, minHeight: 46, paddingHorizontal: 10, fontSize: 15 }} />
+            <Entrada value={csNome || busca} onChangeText={setCsNome} placeholder="Nome do serviço" accessibilityLabel="Nome do serviço novo" style={{ flex: 1, minWidth: 150, minHeight: 42, paddingHorizontal: 10, fontSize: 14 }} />
+            <Entrada value={csPreco} onChangeText={setCsPreco} keyboardType="decimal-pad" placeholder="R$ 0,00" accessibilityLabel="Preço do serviço novo" style={{ width: 104, minHeight: 42, paddingHorizontal: 10, fontSize: 14 }} />
           </View>
           <Botao variante="tracejado" icone="mais" largura onPress={criar}>Criar e colocar no orçamento</Botao>
           <Txt peq suave>Fica salvo na sua lista para os próximos orçamentos.</Txt>

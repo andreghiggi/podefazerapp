@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { lerBanco } from './lib/banco';
-import { seed } from './lib/orcamento';
+import { bancoVazio } from './lib/orcamento';
 import { Banco } from './types';
 
 const CHAVE = 'pode-fazer-v1';
@@ -10,7 +10,7 @@ interface Ctx {
   db: Banco;
   /** aplica uma mudança no banco e guarda no aparelho */
   mudar: (fn: (atual: Banco) => Banco) => void;
-  /** volta ao começo, com os exemplos */
+  /** volta ao começo, sem nada guardado */
   zerar: () => void;
 }
 
@@ -47,7 +47,7 @@ export function BancoProvider({ children, carregando }: { children: React.ReactN
   const mudar = useCallback((fn: (atual: Banco) => Banco) => gravar(fn(ref.current as Banco)), [gravar]);
   const zerar = useCallback(() => {
     AsyncStorage.removeItem(CHAVE).catch(() => {});
-    gravar(seed());
+    gravar(bancoVazio());
   }, [gravar]);
 
   if (!db) return <>{carregando ?? null}</>;

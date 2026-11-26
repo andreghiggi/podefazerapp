@@ -41,6 +41,7 @@ function Raiz() {
     setRecemFeito(false);
   };
   const aberto = db.orcamentos.find((o) => o.id === abertoId) ?? null;
+  // o perfil é criado no primeiro uso (e o cadastro só termina no botão "Começar")
   const precisaBoasVindas = !db.perfil.profissoes || !db.perfil.profissoes.length;
 
   const setPerfil = (p: Partial<PerfilT>) => mudar((b) => ({ ...b, perfil: { ...b.perfil, ...p, exemplo: false } }));
@@ -112,28 +113,10 @@ function Raiz() {
     });
   };
 
-  const limparExemplos = () =>
-    setDialogo({
-      titulo: 'Apagar os exemplos?',
-      texto: 'Os orçamentos de exemplo saem da lista e você escolhe sua profissão. A lista de serviços recomeça com os serviços da sua área.',
-      sim: 'Apagar exemplos',
-      fazer: () => {
-        mudar((b) => ({
-          ...b,
-          orcamentos: b.orcamentos.filter((o) => !o.exemplo),
-          perfil: { nome: b.perfil.exemplo ? '' : b.perfil.nome, profissao: '', profissoes: [], telefone: b.perfil.exemplo ? '' : b.perfil.telefone, cidade: '', condicoes: b.perfil.condicoes },
-          catalogo: [],
-          proxNum: b.orcamentos.some((o) => !o.exemplo) ? b.proxNum : 1,
-        }));
-        setEscolhaProf([]);
-        setOutraProf('');
-      },
-    });
-
   const zerarTudo = () =>
     setDialogo({
       titulo: 'Apagar tudo?',
-      texto: 'Some tudo deste aparelho: orçamentos, serviços e perfil. Volta ao começo com os exemplos.',
+      texto: 'Some tudo deste aparelho: orçamentos, serviços e perfil. Volta ao cadastro inicial.',
       sim: 'Apagar tudo',
       fazer: () => {
         zerar();
@@ -144,6 +127,14 @@ function Raiz() {
     });
 
   const comecar = () => {
+    if (!db.perfil.nome.trim()) {
+      aviso('Informe seu nome ou o nome da empresa');
+      return;
+    }
+    if (db.perfil.telefone.replace(/\D/g, '').length < 10) {
+      aviso('Informe seu telefone com DDD');
+      return;
+    }
     const profs = escolhaProf.slice();
     const outra = outraProf.trim();
     if (outra) profs.push(capitalizar(outra));
@@ -217,7 +208,7 @@ function Raiz() {
   } else if (tela === 'servicos') {
     conteudo = <Servicos db={db} mudar={mudar} ir={ir} />;
   } else if (tela === 'perfil') {
-    conteudo = <Perfil db={db} setPerfil={setPerfil} ir={ir} addProf={addProf} limparExemplos={limparExemplos} zerar={zerarTudo} />;
+    conteudo = <Perfil db={db} setPerfil={setPerfil} ir={ir} addProf={addProf} zerar={zerarTudo} />;
   } else {
     conteudo = <Inicio db={db} filtro={filtro} setFiltro={setFiltro} ir={ir} novo={novo} abrir={abrir} />;
   }

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { Icone, Simbolo } from '../components/Icone';
-import { Botao, Cartao, Chip, Etiqueta, Exemplo, H1, H2, NavInferior, Nota, Tela, Topo, Txt, useCores } from '../components/ui';
+import { Botao, Cartao, Chip, Etiqueta, H1, H2, NavInferior, Tela, Topo, Txt, useCores } from '../components/ui';
 import { nomeDoMes, quando, reais } from '../lib/format';
 import { resumoItens, total } from '../lib/orcamento';
 import { FONTE } from '../theme';
@@ -31,7 +31,6 @@ export function Inicio({ db, filtro, setFiltro, ir, novo, abrir }: {
   const primeiro = (db.perfil.nome || '').split(' ')[0];
   const h = new Date().getHours();
   const saud = h < 12 ? 'Bom dia' : h < 18 ? 'Boa tarde' : 'Boa noite';
-  const temExemplo = db.orcamentos.some((o) => o.exemplo);
   const filtros: [FiltroLista, string][] = [['todos', 'Todos'], ['esperando', 'Esperando'], ['aprovado', 'Aprovados'], ['recusado', 'Recusados']];
 
   return (
@@ -39,7 +38,7 @@ export function Inicio({ db, filtro, setFiltro, ir, novo, abrir }: {
       <Topo>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
           <Simbolo />
-          <Text style={{ fontFamily: FONTE.display800, fontSize: 22, letterSpacing: -0.3, color: c.ink }}>Pode Fazer</Text>
+          <Text style={{ fontFamily: FONTE.display800, fontSize: 20, letterSpacing: -0.3, color: c.ink }}>Pode Fazer</Text>
         </View>
       </Topo>
 
@@ -53,15 +52,13 @@ export function Inicio({ db, filtro, setFiltro, ir, novo, abrir }: {
       <Cartao style={{ flexDirection: 'row', gap: 12 }}>
         <View style={{ flex: 1 }} accessible accessibilityLabel="Resumo do mês">
           <Txt peq suave>{'Feitos em ' + nomeDoMes()}</Txt>
-          <Text style={{ fontFamily: FONTE.display800, fontSize: 26, lineHeight: 30, color: c.ink, fontVariant: ['tabular-nums'] }}>{doMes.length}</Text>
+          <Text style={{ fontFamily: FONTE.display800, fontSize: 23, lineHeight: 27, color: c.ink, fontVariant: ['tabular-nums'] }}>{doMes.length}</Text>
         </View>
         <View style={{ flex: 1 }}>
           <Txt peq suave>Fechados</Txt>
-          <Text style={{ fontFamily: FONTE.display800, fontSize: 26, lineHeight: 30, color: c.ink, fontVariant: ['tabular-nums'] }}>{reais(fechado).replace(',00', '')}</Text>
+          <Text style={{ fontFamily: FONTE.display800, fontSize: 23, lineHeight: 27, color: c.ink, fontVariant: ['tabular-nums'] }}>{reais(fechado).replace(',00', '')}</Text>
         </View>
       </Cartao>
-
-      {temExemplo ? <Nota>Os orçamentos marcados como exemplo são só para você ver como fica. Apague em Perfil quando for usar de verdade.</Nota> : null}
 
       <View style={{ gap: 12 }}>
         <H2>Orçamentos</H2>
@@ -72,7 +69,7 @@ export function Inicio({ db, filtro, setFiltro, ir, novo, abrir }: {
         </ScrollView>
 
         {!lista.length ? (
-          <Txt suave peq style={{ paddingTop: 14, fontSize: 14 }}>Nenhum orçamento aqui ainda. Toque em Novo orçamento para fazer o primeiro.</Txt>
+          <Txt suave peq style={{ paddingTop: 14, fontSize: 13 }}>Nenhum orçamento aqui ainda. Toque em Novo orçamento para fazer o primeiro.</Txt>
         ) : (
           <View style={{ gap: 10 }}>
             {lista.map((o) => (
@@ -81,7 +78,6 @@ export function Inicio({ db, filtro, setFiltro, ir, novo, abrir }: {
                   <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: 10 }}>
                     <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1, minWidth: 0 }}>
                       <Txt forte numberOfLines={1} style={{ flexShrink: 1 }}>{o.cliente || 'Sem nome'}</Txt>
-                      {o.exemplo ? <Exemplo /> : null}
                     </View>
                     <Txt forte num>{reais(total(o))}</Txt>
                   </View>

@@ -2,7 +2,8 @@
 // Rodar (na pasta mobile): npx -y tsx scripts/verifica-logica.ts
 import { lerBanco } from '../src/lib/banco';
 import { DIA, data, fmtQtd, juntarProfs, lerDinheiro, lerQtd, nomeDoMes, numero, quando, reais, semRS } from '../src/lib/format';
-import { condicoesDe, linkZap, listaDe, mensagem, mesclarLista, novoRascunho, ordenarItens, qtdUn, resumoItens, seed, subtotal, total } from '../src/lib/orcamento';
+import { condicoesDe, linkZap, listaDe, mensagem, mesclarLista, novoRascunho, ordenarItens, qtdUn, resumoItens, subtotal, total } from '../src/lib/orcamento';
+import { seed } from './exemplos';
 import { htmlDoPdf } from '../src/lib/pdf';
 
 let ok = 0;
@@ -94,11 +95,15 @@ const ord = ordenarItens([{ tipo: 'material', nome: 'm', qtd: 1, preco: 1 }, { t
 igual('serviços vêm antes dos materiais', ord[0].tipo, 'servico');
 
 console.log('== Banco no aparelho');
-igual('sem nada guardado: começa com exemplos', lerBanco(null).orcamentos.length, 4);
-igual('dado corrompido: recomeça', lerBanco('{lixo').orcamentos.length, 4);
-igual('forma errada: recomeça', lerBanco('{"v":1}').orcamentos.length, 4);
-const salvo = lerBanco(JSON.stringify({ ...b, proxNum: 99 }));
-igual('dado válido é mantido', salvo.proxNum, 99);
+const novoAparelho = lerBanco(null);
+check('aparelho novo começa vazio, sem cliente e sem perfil', novoAparelho.orcamentos.length === 0 && novoAparelho.catalogo.length === 0 && novoAparelho.perfil.nome === '' && novoAparelho.perfil.profissoes.length === 0 && novoAparelho.proxNum === 1);
+igual('dado corrompido: recomeça vazio', lerBanco('{lixo').orcamentos.length, 0);
+igual('forma errada: recomeça vazio', lerBanco('{"v":1}').orcamentos.length, 0);
+const antigo = lerBanco(JSON.stringify(b));
+check('instalação antiga: exemplos e perfil fictício saem', antigo.orcamentos.length === 0 && antigo.perfil.nome === '' && antigo.proxNum === 1);
+const real = { ...b, proxNum: 99, perfil: { ...b.perfil, exemplo: false }, orcamentos: [{ ...o15, exemplo: false }, o14] };
+const salvo = lerBanco(JSON.stringify(real));
+check('dados reais são mantidos (só o exemplo sai)', salvo.proxNum === 99 && salvo.orcamentos.length === 1 && salvo.perfil.nome === 'Carlos Mendes');
 
 console.log('== PDF');
 const html = htmlDoPdf(o15, b.perfil);
